@@ -4,17 +4,21 @@ import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
   Box,
   Checkbox,
-  FormControl,
-  FormControlLabel,
   IconButton,
   InputAdornment,
-  InputLabel,
   OutlinedInput,
   TextField,
 } from "@mui/material";
+import Link from "next/link";
 import React, { useState } from "react";
 
-const LoginForm = () => {
+interface TypeProps {
+  header: string;
+  subHeader: string;
+  isSignUp: boolean; // Optional prop
+}
+
+const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
   const [showPassword, setShowPassword] = useState<Boolean>(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -39,14 +43,16 @@ const LoginForm = () => {
     },
   });
   return (
-    <div className="bg-white w-[480px] h-[750px] shadow-xl shadow-gray-300 rounded-md m-auto text-center p-10">
+    <div
+      className={`bg-white w-[480px] ${
+        isSignUp ? "h-[900px] p-10 pt-7" : "h-[750px] p-10"
+      } shadow-xl shadow-gray-300 rounded-md m-auto text-center `}
+    >
       <div>
         <img src="/assets/Logo 1.png" className="m-auto w-36 pt-5 mb-10" />
 
-        <p className="text-[20px] mb-4">Welcome Back !</p>
-        <p className="text-[15px] text-[#ABABAB] mb-10">
-          Sign in to continue to your Digital Library
-        </p>
+        <p className="text-[20px] mb-2"> {header}</p>
+        <p className="text-[15px] text-[#ABABAB] mb-7">{subHeader}</p>
         <Box
           component="form"
           sx={{
@@ -60,7 +66,26 @@ const LoginForm = () => {
             <p className="text-left text-[16px] font-semibold">Username</p>
             <CustomTextField id="outlined-size-small" size="small" />
           </div>
-          <div>
+          {isSignUp && (
+            <div className="mb-5">
+              <p className="text-left text-[16px] font-semibold">Email</p>
+              <CustomTextField id="outlined-size-small" size="small" />
+            </div>
+          )}
+          {isSignUp && (
+            <div className="mb-5">
+              <p className="text-left text-[16px] font-semibold">First name</p>
+              <CustomTextField id="outlined-size-small" size="small" />
+            </div>
+          )}
+          {isSignUp && (
+            <div className="mb-5">
+              <p className="text-left text-[16px] font-semibold">Last name</p>
+              <CustomTextField id="outlined-size-small" size="small" />
+            </div>
+          )}
+
+          <div className=" mb-5">
             <p className="text-left text-[16px] font-semibold">Password</p>
             <OutlinedInput
               id="outlined-adornment-password"
@@ -96,27 +121,52 @@ const LoginForm = () => {
         </Box>
       </div>
 
-      <div className="flex justify-between items-center mb-9 ">
-        <div>
-          <Checkbox
-            sx={{
-              color: "#DF7D3A",
-              "&.Mui-checked": {
+      {!isSignUp && (
+        <div className="flex justify-between items-center mb-9 mt-9">
+          <div>
+            <Checkbox
+              sx={{
                 color: "#DF7D3A",
-              },
-            }}
-          />
-          <span className="text-[16px] ml-[-5px]">Remember me</span>
+                "&.Mui-checked": {
+                  color: "#DF7D3A",
+                },
+              }}
+            />
+            <span className="text-[16px] ml-[-5px]">Remember me</span>
+          </div>
+          <p className="border-b-2 border-gray-600">Forgot password?</p>
         </div>
-        <p>Forgot password?</p>
-      </div>
-      <button className="bg-[#DF7D3A] text-white w-[100%] pt-2 pb-2 rounded-md mb-12">
-        Login
-      </button>
+      )}
+      {isSignUp ? (
+        <button className="bg-[#DF7D3A] text-white w-[100%] pt-2 pb-2 rounded-md mb-12">
+          Register
+        </button>
+      ) : (
+        <button className="bg-[#DF7D3A] text-white w-[100%] pt-2 pb-2 rounded-md mb-12">
+          Login
+        </button>
+      )}
       <div className="flex justify-between items-center">
         <div>
-          <span>New User?</span>
-          <span className="text-[16px]">Register Here</span>
+          {isSignUp ? (
+            <>
+              <span>Already a User?</span>
+              <Link href={""}>
+                <span className="text-[16px] border-b-2 border-gray-600 ml-1">
+                  Login now
+                </span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <span>New User?</span>
+              <Link href={""}>
+                <span className="text-[16px] border-b-2 border-gray-600 ml-1">
+                  Register Here
+                </span>
+              </Link>
+            </>
+          )}
         </div>
         <p>Use as Guest </p>
       </div>
