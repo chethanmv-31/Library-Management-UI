@@ -5,9 +5,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { store } from "@/store/store";
 import { Provider } from "react-redux";
-import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import Navbar from "@/components/layout/Navbar";
+import Sidebar from "@/components/layout/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,10 +38,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="justify-center flex items-center h-full">
+        <div className=" flex h-full">
           {!isAuthPage && <Sidebar />}
           <Provider store={store}>
-            <main style={{ flexGrow: 1 }}>{children}</main>
+            <main
+              style={{
+                flexGrow: 1,
+                background: isAuthPage ? "none" : "#F3F3F7",
+                padding: "3rem",
+              }}
+            >
+              {!isAuthPage && <Navbar />}
+              {children}
+            </main>
           </Provider>
         </div>
       </body>
