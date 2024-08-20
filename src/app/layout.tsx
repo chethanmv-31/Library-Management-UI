@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="justify-center flex items-center h-full">
+        <div className="flex  h-full">
           {!isAuthPage && <Sidebar />}
           <Provider store={store}>
             <main style={{ flexGrow: 1 }}>{children}</main>
