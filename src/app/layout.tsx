@@ -5,6 +5,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { store } from "@/store/store";
 import { Provider } from "react-redux";
+import Sidebar from "@/components/Sidebar";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +21,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider store={store}>{children}</Provider>
+        <div className="justify-center flex items-center h-full">
+          {!isAuthPage && <Sidebar />}
+          <Provider store={store}>
+            <main style={{ flexGrow: 1 }}>{children}</main>
+          </Provider>
+        </div>
       </body>
     </html>
   );
