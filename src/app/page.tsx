@@ -9,13 +9,25 @@ import RecommendedSection from "@/components/home/RecommendedSection";
 import Image from "next/image";
 
 export default function Home() {
+  const currentHour = new Date().getHours();
+
+  let greeting;
+  if (currentHour >= 5 && currentHour < 12) {
+    greeting = "Good Morning";
+  } else if (currentHour >= 12 && currentHour < 17) {
+    greeting = "Good Afternoon";
+  } else if (currentHour >= 17 && currentHour < 21) {
+    greeting = "Good Evening";
+  } else {
+    greeting = "Good Night";
+  }
   return (
     <div>
       <div className="flex gap-10 py-[3.25rem]">
         <Quotes />
         <NewArrivals />
       </div>
-      <p>Good Morning</p>
+      <p className="text-[35px] font-semibold">{greeting}</p>
       <RecommendedSection />
       <RecentReadings />
       <AcademicsBooks />
