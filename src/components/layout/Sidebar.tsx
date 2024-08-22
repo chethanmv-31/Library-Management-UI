@@ -27,8 +27,9 @@ const Sidebar = () => {
             boxSizing: "border-box",
             marginTop: "3rem",
             marginBottom: "3rem",
-            marginLeft: "3rem",
+            marginLeft: "2rem",
             marginRight: "0",
+            borderRadius:"10px 0 0 10px"
           },
         }}
         variant="permanent"
