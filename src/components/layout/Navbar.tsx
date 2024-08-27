@@ -146,7 +146,7 @@ const Navbar: React.FC = () => {
     .replace(/ /g, "-");
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between mb-8">
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <FormControl sx={{ m: 0, p: 0 }}>
           <CustomSelect

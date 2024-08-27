@@ -1,12 +1,6 @@
-import AcademicsBooks from "@/components/home/AcademicsBooks";
-import BookCard from "@/components/home/BookCard";
-import JournalsSection from "@/components/home/JournalsSection";
+import BookSections from "@/components/home/BookSection";
 import NewArrivals from "@/components/home/NewArrivals";
-import News from "@/components/home/News";
 import Quotes from "@/components/home/Quotes";
-import RecentReadings from "@/components/home/RecentReadings";
-import RecommendedSection from "@/components/home/RecommendedSection";
-import Image from "next/image";
 
 export default function Home() {
   const currentHour = new Date().getHours();
@@ -21,18 +15,21 @@ export default function Home() {
   } else {
     greeting = "Good Night";
   }
+
   return (
-    <div>
-      <div className="flex gap-10 py-[3.25rem]">
+    <div className="h-screen overflow-y-auto scrollbar-hide">
+      <div className=" flex gap-10  pb-[3.25rem] pt-4">
         <Quotes />
         <NewArrivals />
       </div>
       <p className="text-[35px] font-semibold">{greeting}</p>
-      <RecommendedSection />
-      <RecentReadings />
-      <AcademicsBooks />
-      <JournalsSection />
-      <News />
+      <div className="  mt-[12px] pb-48">
+        <BookSections heading="Recommended for You" />
+        <BookSections heading="Recent Readings" />
+        <BookSections heading="Academic Books" />
+        <BookSections heading="Journals, Articles & Paper Publications" />
+        <BookSections heading="News" />
+      </div>
     </div>
   );
 }
