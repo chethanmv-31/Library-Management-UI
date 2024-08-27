@@ -46,6 +46,7 @@ export default function RootLayout({
                 flexGrow: 1,
                 background: isAuthPage ? "none" : "#F3F3F7",
                 padding: "3rem",
+                paddingTop: "2rem",
                 height: "fit-content",
               }}
             >
