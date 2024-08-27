@@ -13,6 +13,7 @@ import { Home, Settings, Info } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
+import Link from "next/link";
 const Sidebar = () => {
   const drawerWidth = 240;
 
@@ -29,7 +30,7 @@ const Sidebar = () => {
             marginBottom: "3rem",
             marginLeft: "2rem",
             marginRight: "0",
-            borderRadius:"10px 0 0 10px"
+            borderRadius: "10px 0 0 10px",
           },
         }}
         variant="permanent"
@@ -46,19 +47,22 @@ const Sidebar = () => {
         </Toolbar>
         <div className="flex justify-center">
           <List>
-            <ListItem button key="Home">
-              <ListItemIcon sx={{ minWidth: "30px" }}>
-                <Home />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-
-            <ListItem button key="Search">
-              <ListItemIcon sx={{ minWidth: "30px" }}>
-                <SearchIcon />
-              </ListItemIcon>
-              <ListItemText primary="Search" />
-            </ListItem>
+            <Link href={"/"}>
+              <ListItem button key="Home">
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <Home />
+                </ListItemIcon>
+                <ListItemText primary="Home" />
+              </ListItem>
+            </Link>
+            <Link href={"/search"}>
+              <ListItem button key="Search">
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <SearchIcon />
+                </ListItemIcon>
+                <ListItemText primary="Search" />
+              </ListItem>
+            </Link>
 
             <ListItem button key="My Shelf">
               <ListItemIcon sx={{ minWidth: "30px" }}>

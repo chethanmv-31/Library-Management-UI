@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -119,6 +119,9 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const Navbar: React.FC = () => {
   const [age, setAge] = React.useState<AgeOption>(10);
+  
+    const [timeString, setTimeString] = useState("");
+    const [formattedDate, setFormattedDate] = useState("");
 
   const handleChange = (event: any) => {
     setAge(event.target.value as AgeOption);
@@ -130,20 +133,37 @@ const Navbar: React.FC = () => {
     30: "Thirty",
   };
 
-  const now = new Date();
-  const timeString = now.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
 
-  const formattedDate = now
-    .toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
-    .replace(/ /g, "-");
+      const timeString = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const formattedDate = now
+        .toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+        .replace(/ /g, "-");
+
+      setTimeString(timeString);
+      setFormattedDate(formattedDate);
+    };
+
+    // Call updateDateTime once initially to set the initial values
+    updateDateTime();
+
+    // Set an interval to update the date and time every second
+    const intervalId = setInterval(updateDateTime, 1000);
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="flex justify-between mb-8">
