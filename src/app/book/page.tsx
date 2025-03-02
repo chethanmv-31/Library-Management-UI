@@ -12,22 +12,42 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import Button from "@/components/Button";
 import HeadphonesRoundedIcon from "@mui/icons-material/HeadphonesRounded";
+import { Box, Tab } from "@mui/material";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import OverViewSection from "@/components/detailsPage/OverviewSection";
+
 const BookDetailsPage = () => {
   const [value, setValue] = useState<number | null>(2);
 
   const isHardCopyAvailable = false;
   const isEbookAvailable = true;
   const isAudioAvailable = true;
+  const [data, setData] = React.useState("1");
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setData(newValue);
+  };
+
+  const tabData = [
+    { label: "Overview", value: "1" },
+    { label: "View 166 Edition", value: "2" },
+    { label: "Details", value: "3" },
+    { label: "4.2 Reviews", value: "4" },
+    { label: "Lists", value: "5" },
+    { label: "Related Books", value: "6" },
+  ];
 
   return (
-    <div className="">
+    <div className="h-[750px] overflow-y-auto scrollbar-hide">
       <div className="flex items-center gap-3 pb-4">
         <ArrowBackIcon sx={{ color: "#4D4D4D" }} />
         <p>Back to results</p>
       </div>
       <div className="flex justify-between">
         <div className="flex gap-[70px]">
-          <div className="grid gap-12 overflow-y-auto scrollbar-hide h-[47rem]">
+          <div className="grid gap-12 overflow-y-auto scrollbar-hide">
             <div className="bg-white w-[273px] h-[390px] p-5 rounded-md">
               <Image
                 src="/assets/Rectangle 12.png"
@@ -46,43 +66,6 @@ const BookDetailsPage = () => {
                   <p>Share</p>
                 </div>
               </div>
-            </div>
-            <div className="bg-white w-[273px] h-[297px] p-5 rounded-md">
-              <p className="text-[20px] font-semibold text-center pb-[25px]">
-                <span className="text-[#F27851]">Buy </span>
-                this book Online
-              </p>
-              <div className="mb-[23px]">
-                <Link href={""}>
-                  <div className="flex items-center gap-[16px] pl-[13px]">
-                    <Image
-                      src={"/assets/flipkart.png"}
-                      alt={""}
-                      width={40}
-                      height={40}
-                    />
-                    <p className="text-[15px] underline">Buy Now</p>
-                  </div>
-                </Link>
-              </div>
-              <div className="mb-[38px]">
-                <Link href={""}>
-                  <div className="flex items-center gap-[23px] pl-[18px]">
-                    <Image
-                      src={"/assets/amazon.png"}
-                      alt={""}
-                      width={29}
-                      height={29}
-                    />
-                    <p className="text-[15px] underline">Buy Now</p>
-                  </div>
-                </Link>
-              </div>
-              <p className="text-[10.92px] w-[186px] m-auto font-semibold">
-                When you buy books using these links the Internet Archive may
-                earn a &nbsp;
-                <span className="underline">small commission.</span>
-              </p>
             </div>
           </div>
           <div className="w-[505px]">
@@ -218,7 +201,84 @@ const BookDetailsPage = () => {
           </div>
         </div>
       </div>
-      
+      <div className="flex mt-8 gap-[70px]">
+        <div className="bg-white min-w-[273px] h-[297px] p-5 rounded-md">
+          <p className="text-[20px] font-semibold text-center pb-[25px]">
+            <span className="text-[#F27851]">Buy </span>
+            this book Online
+          </p>
+          <div className="mb-[23px]">
+            <Link href={""}>
+              <div className="flex items-center gap-[16px] pl-[13px]">
+                <Image
+                  src={"/assets/flipkart.png"}
+                  alt={""}
+                  width={40}
+                  height={40}
+                />
+                <p className="text-[15px] underline">Buy Now</p>
+              </div>
+            </Link>
+          </div>
+          <div className="mb-[38px]">
+            <Link href={""}>
+              <div className="flex items-center gap-[23px] pl-[18px]">
+                <Image
+                  src={"/assets/amazon.png"}
+                  alt={""}
+                  width={29}
+                  height={29}
+                />
+                <p className="text-[15px] underline">Buy Now</p>
+              </div>
+            </Link>
+          </div>
+          <p className="text-[10.92px] w-[186px] m-auto font-semibold">
+            When you buy books using these links the Internet Archive may earn a
+            &nbsp;
+            <span className="underline">small commission.</span>
+          </p>
+        </div>
+        <div className="w-full">
+          <Box>
+            <TabContext value={data}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={handleChange}
+                  aria-label="lab API tabs example"
+                  variant="fullWidth"
+                  TabIndicatorProps={{ style: { backgroundColor: "#F27851" } }}
+                >
+                  {tabData.map((tab) => (
+                    <Tab
+                      key={tab.value}
+                      label={tab.label}
+                      value={tab.value}
+                      sx={{
+                        bgcolor: "background.paper",
+                        color: "#666666",
+                        "&.Mui-selected": {
+                          color: "#F27851",
+                          fontWeight: "600",
+                        },
+                        "&:focus": { color: "#F27851" },
+                      }}
+                    />
+                  ))}
+                </TabList>
+              </Box>
+              <TabPanel value="1" sx={{ padding: 0, paddingTop: 3 }}>
+                <OverViewSection />
+              </TabPanel>
+              <TabPanel value="2">Item Two</TabPanel>
+              <TabPanel value="3">Item Three</TabPanel>
+              <TabPanel value="4">Item Three</TabPanel>
+              <TabPanel value="5">Item Three</TabPanel>
+              <TabPanel value="6">Item Three</TabPanel>
+            </TabContext>
+          </Box>
+        </div>
+      </div>
     </div>
   );
 };
