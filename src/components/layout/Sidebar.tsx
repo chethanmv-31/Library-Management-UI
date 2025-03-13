@@ -64,12 +64,14 @@ const Sidebar = () => {
               </ListItem>
             </Link>
 
+            <Link href={"/myShelf"}>
             <ListItem button key="My Shelf">
               <ListItemIcon sx={{ minWidth: "30px" }}>
                 <ApartmentIcon />
               </ListItemIcon>
               <ListItemText primary="My Shelf" />
             </ListItem>
+            </Link>
           </List>
         </div>
       </Drawer>

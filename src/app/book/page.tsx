@@ -188,7 +188,7 @@ const BookDetailsPage = () => {
 
           <div className="flex space-x-8 my-1">
             {[1, 2, 3].map((item) => (
-              <div className="w-[77px] h-[100px] border border-[#F1F1F1] rounded-md">
+              <div key={item} className="w-[77px] h-[100px] border border-[#F1F1F1] rounded-md">
                 <Image
                   src="/assets/Rectangle 12.png"
                   alt={""}
