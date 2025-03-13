@@ -6,7 +6,6 @@ import {
   InputAdornment,
   MenuItem,
   Select,
-  SelectChangeEvent,
   styled,
   TextField,
 } from "@mui/material";
