@@ -45,9 +45,11 @@ export default function RootLayout({
               style={{
                 flexGrow: 1,
                 background: isAuthPage ? "none" : "#F3F3F7",
-                padding: "3rem",
-                paddingTop: "2rem",
-                height: "fit-content",
+                ...(isAuthPage ? {} : {
+                  padding: "3rem",
+                  paddingTop: "2rem",
+                  height: "fit-content",
+                }),
               }}
             >
               {!isAuthPage && <Navbar />}
