@@ -12,10 +12,14 @@ import {
   OutlinedInput,
   TextField,
 } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import OtpVerification from "./OtpVerification";
+
+import { useRouter } from 'next/navigation';
 
 interface TypeProps {
   header: string;
@@ -44,13 +48,28 @@ const CustomTextField = styled(TextField)({
       outline: "none",
     },
   },
+  // Add these styles to align the helper text
+  "& .MuiFormHelperText-root": {
+    marginLeft: 0,
+    marginRight: 0
+  }
 });
 
 const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
-  const { control, handleSubmit } = useForm<IFormInput>();
+  const router = useRouter();
+  const { control, handleSubmit, formState: { errors } } = useForm<IFormInput>({
+    defaultValues: {
+      userName: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      password: ''
+    }
+  });
   const dispatch = useDispatch();
   const formState = useSelector((state: RootState) => state.form);
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -63,19 +82,48 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     dispatch(updateForm(data));
     console.log("data====", data);
+    
+    // Navigate to home page after successful login/registration
+    if (!isSignUp) {
+      router.push('/');
+    } else {
+      router.push('/login');
+    }
+  };
+
+  // Add this handler
+  const handleForgotPassword = () => {
+    setShowVerification(true);
+  };
+
+  // Update the verification form's input section
+  if (showVerification) {
+    return <OtpVerification onBack={() => setShowVerification(false)} />;
+  }
+  const handleGuestClick = () => {
+    router.push('/');
   };
 
   return (
     <div
       className={`bg-white w-[480px] ${
-        isSignUp ? "h-[900px] p-10 pt-7" : "h-[750px] p-10"
-      } shadow-xl shadow-gray-300 rounded-md m-auto text-center `}
+        isSignUp ? "min-h-[800px]" : "min-h-[680px]"
+      } shadow-xl shadow-gray-300 rounded-md m-auto text-center overflow-y-auto p-10 ${
+        isSignUp ? "pt-3" : "pt-8"
+      }`}
     >
       <div>
-        <img src="/assets/Logo 1.png" className="m-auto w-36 pt-5 mb-10" />
+        <Image
+          src="/assets/Logo 1.png"
+          alt="Library Management Logo"
+          width={120} // w-36 equals 144px
+          height={120} // Setting equal height for aspect ratio
+          className="m-auto pt-5 mb-10"
+          priority // Since this is a logo, marking it as high priority for LCP
+        />
 
         <p className="text-[20px] mb-2">{header}</p>
-        <p className="text-[15px] text-[#ABABAB] mb-7">{subHeader}</p>
+        <p className="text-[15px] text-[#ABABAB] mb-5">{subHeader}</p>
 
         <Box
           component="form"
@@ -92,11 +140,14 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
             <Controller
               name="userName"
               control={control}
+              rules={{ required: 'Username is required' }}
               render={({ field }) => (
                 <CustomTextField
                   {...field}
                   size="small"
                   autoComplete="username"
+                  error={!!errors.userName}
+                  helperText={errors.userName?.message}
                 />
               )}
             />
@@ -109,11 +160,20 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 <Controller
                   name="email"
                   control={control}
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Invalid email address'
+                    }
+                  }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
                       size="small"
                       autoComplete="email"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
                     />
                   )}
                 />
@@ -123,11 +183,14 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 <Controller
                   name="firstName"
                   control={control}
+                  rules={{ required: 'First name is required' }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
                       size="small"
                       autoComplete="given-name"
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
                     />
                   )}
                 />
@@ -137,11 +200,14 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 <Controller
                   name="lastName"
                   control={control}
+                  rules={{ required: 'Last name is required' }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
                       size="small"
                       autoComplete="family-name"
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
                     />
                   )}
                 />
@@ -154,11 +220,19 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
             <Controller
               name="password"
               control={control}
+              rules={{
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters'
+                }
+              }}
               render={({ field }) => (
                 <OutlinedInput
                   {...field}
                   id="outlined-adornment-password"
                   type={showPassword ? "text" : "password"}
+                  error={!!errors.password}
                   sx={{
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "lightgray",
@@ -189,33 +263,40 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 />
               )}
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm text-left mt-1">{errors.password.message}</p>
+            )}
           </div>
-
+          {!isSignUp && (
+            <div className="flex justify-between items-center mb-9 mt-9">
+              <div>
+                <Checkbox
+                  sx={{
+                    color: "#DF7D3A",
+                    "&.Mui-checked": {
+                      color: "#DF7D3A",
+                    },
+                    paddingLeft: 0,
+                  }}
+                />
+                <span className="text-[16px] ml-[-5px]">Remember me</span>
+              </div>
+              <button
+                onClick={handleForgotPassword}
+                className="border-b-2 border-gray-600"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
           <button
             type="submit"
-            className="bg-[#DF7D3A] text-white w-[100%] pt-3 pb-3 rounded-md mb-12 hover:bg-[#df7c3ae4]"
+            className="bg-[#DF7D3A] text-white w-[100%] pt-3 pb-3 rounded-md  hover:bg-[#df7c3ae4]"
           >
             {isSignUp ? "Register" : "Login"}
           </button>
         </Box>
       </div>
-
-      {!isSignUp && (
-        <div className="flex justify-between items-center mb-9 mt-9">
-          <div>
-            <Checkbox
-              sx={{
-                color: "#DF7D3A",
-                "&.Mui-checked": {
-                  color: "#DF7D3A",
-                },
-              }}
-            />
-            <span className="text-[16px] ml-[-5px]">Remember me</span>
-          </div>
-          <p className="border-b-2 border-gray-600">Forgot password?</p>
-        </div>
-      )}
 
       <div className="flex justify-between items-center">
         <div>
@@ -231,7 +312,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
           ) : (
             <>
               <span>New User?</span>
-              <Link href="/register">
+              <Link href="/signup">
                 <span className="text-[16px] border-b-2 border-gray-600 ml-1">
                   Register Here
                 </span>
@@ -239,7 +320,11 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
             </>
           )}
         </div>
-        <p>Use as Guest</p>
+        <button 
+          onClick={handleGuestClick}
+        >
+          Use as Guest
+        </button>
       </div>
     </div>
   );
