@@ -17,6 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OverViewSection from "@/components/detailsPage/OverviewSection";
+import BorrowModal from "@/components/BorrowModal";
 
 const BookDetailsPage = () => {
   const [value, setValue] = useState<number | null>(2);
@@ -38,6 +39,8 @@ const BookDetailsPage = () => {
     { label: "Lists", value: "5" },
     { label: "Related Books", value: "6" },
   ];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="h-[750px] overflow-y-auto scrollbar-hide">
@@ -148,6 +151,10 @@ const BookDetailsPage = () => {
                 buttonColor="#F27851"
                 textColor="#fff"
                 width={"210px"}
+                onClick={() => {
+                  console.log('Borrow button clicked');
+                  setIsModalOpen(true);
+                }}
               />
 
               <Button
@@ -279,6 +286,11 @@ const BookDetailsPage = () => {
           </Box>
         </div>
       </div>
+      
+      <BorrowModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 };

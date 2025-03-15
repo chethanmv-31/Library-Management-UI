@@ -6,6 +6,7 @@ interface PropTypes {
   textColor: string;
   width: string;
   icon?: any;
+  onClick?: () => void;
 }
 
 const Button = ({
@@ -14,12 +15,12 @@ const Button = ({
   textColor,
   width,
   icon,
+  onClick
 }: PropTypes) => {
-  const button = "#fff";
-  console.log("color===", button, textColor, button === textColor);
-
+  
   return (
-    <p
+    <p 
+      onClick={onClick}
       style={{
         background: `${buttonColor}`,
         color: `${textColor}`,
