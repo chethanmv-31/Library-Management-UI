@@ -14,18 +14,53 @@ interface BorrowModalProps {
 
 const BorrowModal: React.FC<BorrowModalProps> = ({ isOpen, onClose }) => {
   const [fromDate, setFromDate] = useState(dayjs());
-  const [toDate, setToDate] = useState(dayjs());
+  const [toDate, setToDate] = useState(dayjs().add(30, 'day'));
   const [serialNo, setSerialNo] = useState("");
   const [description, setDescription] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errors, setErrors] = useState({
+    serialNo: "",
+    description: "",
+    toDate: ""
+  });
 
-  const handleBorrow = () => {
-    setShowSuccess(true);
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      serialNo: "",
+      description: "",
+      toDate: ""
+    };
+
+    // Serial Number validation
+    if (!serialNo) {
+      newErrors.serialNo = "Serial number is required";
+      isValid = false;
+    } else if (serialNo.length !== 6) {
+      newErrors.serialNo = "Serial number must be 6 digits";
+      isValid = false;
+    }
+
+    // Description validation
+    if (!description.trim()) {
+      newErrors.description = "Description is required";
+      isValid = false;
+    }
+
+    // Date validation
+    if (!toDate) {
+      newErrors.toDate = "Please select a return date";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
-  const handleSuccessClose = () => {
-    setShowSuccess(false);
-    onClose();
+  const handleBorrow = () => {
+    if (validateForm()) {
+      setShowSuccess(true);
+    }
   };
 
   return (
@@ -103,25 +138,41 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ isOpen, onClose }) => {
             </div>
   
             <div className="mb-[1.2rem]">
-              <p className="mb-4 ">Book Serial No.</p>
+              <p className="mb-4">Book Serial No.</p>
               <input
                 type="text"
                 placeholder="Enter 6 Digit Serial No"
-                className="w-full p-3 rounded-md border border-[#D6D6D6] focus:outline-none focus:border-[#D6D6D6]"
+                className={`w-full p-3 rounded-md border ${
+                  errors.serialNo ? 'border-red-500' : 'border-[#D6D6D6]'
+                } focus:outline-none focus:border-[#D6D6D6]`}
                 value={serialNo}
-                onChange={(e) => setSerialNo(e.target.value)}
+                onChange={(e) => {
+                  setSerialNo(e.target.value.replace(/[^0-9]/g, '').slice(0, 6));
+                  if (errors.serialNo) setErrors({ ...errors, serialNo: "" });
+                }}
               />
+              {errors.serialNo && (
+                <p className="text-red-500 text-sm mt-1">{errors.serialNo}</p>
+              )}
             </div>
-  
+
             <div className="mb-[1.2rem]">
-              <p className="mb-4 ">Description</p>
+              <p className="mb-4">Description</p>
               <textarea
                 placeholder="Purpose"
-                className="w-full p-3 rounded-md border border-[#D6D6D6] min-h-[100px] resize-none focus:outline-none focus:border-[#D6D6D6] "
+                className={`w-full p-3 rounded-md border ${
+                  errors.description ? 'border-red-500' : 'border-[#D6D6D6]'
+                } min-h-[100px] resize-none focus:outline-none focus:border-[#D6D6D6]`}
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (errors.description) setErrors({ ...errors, description: "" });
+                }}
                 rows={4}
               />
+              {errors.description && (
+                <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+              )}
             </div>
   
             <div className="flex justify-center">
@@ -139,7 +190,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ isOpen, onClose }) => {
   
       <SuccessModal 
         isOpen={showSuccess} 
-        onClose={handleSuccessClose}
+        onClose={handleBorrow}
       />
     </>
   );
