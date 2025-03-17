@@ -6,6 +6,12 @@ import BorrowedBooks from "./BorrowedBooks";
 import EBooks from "./EBooks";
 import AudioBooks from "./AudioBooks";
 import ArticlesJournals from "./ArticlesJournals";
+import ReturnModal from "./ReturnModal";
+
+interface ReturnModalState {
+  isOpen: boolean;
+  bookSerialNo?: string;
+}
 
 const TabsSection = () => {
   const tabData = [
@@ -18,10 +24,30 @@ const TabsSection = () => {
   ];
 
   const [data, setData] = useState("1");
+  const [returnModal, setReturnModal] = useState<ReturnModalState>({
+    isOpen: false,
+    bookSerialNo: undefined,
+  });
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setData(newValue);
   };
+
+  const handleReturnClick = (serialNo?: string) => {
+    setReturnModal({ isOpen: true, bookSerialNo: serialNo });
+  };
+
+  const handleReturnSubmit = (data: {
+    fromDate: string;
+    toDate: string;
+    serialNo: string;
+    penalties: number;
+  }) => {
+    // Handle the return submission here
+    console.log('Return data:', data);
+    setReturnModal({ isOpen: false, bookSerialNo: undefined });
+  };
+
   return (
     <div className="mb-8">
       <div className="w-full pt-8 pb-8">
@@ -60,12 +86,12 @@ const TabsSection = () => {
               >
                 {data === index.toString() && (
                   <div className="mt-7">
-                    {index === 1 && <AllBooks />}
-                    {index === 2 && <FavoriteBooks />}
-                    {index === 3 && <BorrowedBooks />}
-                    {index === 4 && <EBooks />}
-                    {index === 5 && <AudioBooks />}
-                    {index === 6 && <ArticlesJournals />}
+                    {index === 1 && <AllBooks onReturnClick={handleReturnClick} />}
+                    {index === 2 && <FavoriteBooks onReturnClick={handleReturnClick} />}
+                    {index === 3 && <BorrowedBooks onReturnClick={handleReturnClick} />}
+                    {index === 4 && <EBooks onReturnClick={handleReturnClick} />}
+                    {index === 5 && <AudioBooks onReturnClick={handleReturnClick} />}
+                    {index === 6 && <ArticlesJournals onReturnClick={handleReturnClick} />}
                   </div>
                 )}
               </div>
@@ -73,6 +99,12 @@ const TabsSection = () => {
           </div>
         </Box>
       </div>
+      <ReturnModal
+        isOpen={returnModal.isOpen}
+        onClose={() => setReturnModal({ isOpen: false, bookSerialNo: undefined })}
+        bookSerialNo={returnModal.bookSerialNo}
+        onSubmit={handleReturnSubmit}
+      />
     </div>
   );
 };

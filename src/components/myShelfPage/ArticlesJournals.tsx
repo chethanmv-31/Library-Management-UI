@@ -1,6 +1,10 @@
 import React from "react";
 import TabCards from "./TabCards";
 
+interface ArticlesJournalsProps {
+  onReturnClick: (serialNo?: string) => void;
+}
+
 const articlesJournalsData = [
   {
     id: 1,
@@ -43,11 +47,11 @@ const articlesJournalsData = [
   }
 ];
 
-const ArticlesJournals = () => {
+const ArticlesJournals = ({ onReturnClick }: ArticlesJournalsProps) => {
   return (
     <div className="flex flex-wrap gap-8">
       {articlesJournalsData.map((item) => (
-        <TabCards key={item.id} {...item} />
+        <TabCards key={item.id} {...item} onReturnClick={onReturnClick} />
       ))}
     </div>
   );

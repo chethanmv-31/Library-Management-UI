@@ -1,6 +1,10 @@
 import React from "react";
 import TabCards from "./TabCards";
 
+interface FavoriteBooksProps {
+  onReturnClick: (serialNo?: string) => void;
+}
+
 const favoriteBooksData = [
   {
     id: 1,
@@ -43,11 +47,11 @@ const favoriteBooksData = [
   }
 ];
 
-const FavoriteBooks = () => {
+const FavoriteBooks = ({ onReturnClick }: FavoriteBooksProps) => {
   return (
     <div className="flex flex-wrap gap-8">
       {favoriteBooksData.map((book) => (
-        <TabCards key={book.id} {...book} />
+        <TabCards key={book.id} {...book} onReturnClick={onReturnClick} />
       ))}
     </div>
   );

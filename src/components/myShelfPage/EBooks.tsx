@@ -1,6 +1,10 @@
 import React from "react";
 import TabCards from "./TabCards";
 
+interface EBooksProps {
+  onReturnClick: (serialNo?: string) => void;
+}
+
 const eBooksData = [
   {
     id: 1,
@@ -30,11 +34,11 @@ const eBooksData = [
   }
 ];
 
-const EBooks = () => {
+const EBooks = ({ onReturnClick }: EBooksProps) => {
   return (
     <div className="flex flex-wrap gap-8">
       {eBooksData.map((book) => (
-        <TabCards key={book.id} {...book} />
+        <TabCards key={book.id} {...book} onReturnClick={onReturnClick} />
       ))}
     </div>
   );
