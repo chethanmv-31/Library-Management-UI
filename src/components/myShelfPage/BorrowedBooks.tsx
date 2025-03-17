@@ -1,6 +1,10 @@
 import React from "react";
 import TabCards from "./TabCards";
 
+interface BorrowedBooksProps {
+  onReturnClick: (serialNo?: string) => void;
+}
+
 const borrowedBooksData = [
   {
     id: 1,
@@ -43,11 +47,11 @@ const borrowedBooksData = [
   }
 ];
 
-const BorrowedBooks = () => {
+const BorrowedBooks = ({ onReturnClick }: BorrowedBooksProps) => {
   return (
     <div className="flex flex-wrap gap-8">
       {borrowedBooksData.map((book) => (
-        <TabCards key={book.id} {...book} />
+        <TabCards key={book.id} {...book} onReturnClick={onReturnClick} />
       ))}
     </div>
   );

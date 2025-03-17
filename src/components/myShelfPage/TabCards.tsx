@@ -12,6 +12,8 @@ interface TabCardsProps {
   type: string;
   image: string;
   isOverdue: boolean;
+  serialNo?: string;
+  onReturnClick: (serialNo?: string) => void;
 }
 
 const TabCards = ({
@@ -24,7 +26,9 @@ const TabCards = ({
   status,
   type,
   image,
-  isOverdue
+  isOverdue,
+  serialNo,
+  onReturnClick
 }: TabCardsProps) => {
   return (
     <div className="flex bg-white w-full max-w-[360px] p-4 rounded-xl shadow-sm relative ">
@@ -59,7 +63,10 @@ const TabCards = ({
             {status}
           </button>
           {type === "Physical" && (
-            <button className="w-full py-2 px-3 border border-[#F27851] text-[#F27851] rounded-md text-sm font-medium hover:bg-[#F27851] hover:text-white transition-colors">
+            <button 
+              onClick={() => onReturnClick(serialNo)}
+              className="w-full py-2 px-3 border border-[#F27851] text-[#F27851] rounded-md text-sm font-medium hover:bg-[#F27851] hover:text-white transition-colors"
+            >
               Return
             </button>
           )}
