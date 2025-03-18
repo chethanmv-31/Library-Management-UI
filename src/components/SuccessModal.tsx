@@ -6,9 +6,11 @@ import Image from "next/image";
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
+  message?: string;
 }
 
-const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
+const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose, title , message}) => {
   return (
     <Dialog
       open={isOpen}
@@ -24,7 +26,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
     >
       <DialogContent sx={{ padding: 0, textAlign: 'center' }}>
         <div className="flex flex-col items-center justify-between gap-36 space-y-6">
-          <h2 className="text-xl font-semibold mt-12">Process Completed</h2>
+          <h2 className="text-xl font-semibold mt-12">{title}</h2>
           
           <div className="w-24 h-24">
             <Image
@@ -37,13 +39,18 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="w-full flex justify-center mt-8">
-            <Button
-              buttonText="Back"
-              buttonColor="#F27851"
-              textColor="#fff"
-              width="60%"
-              onClick={onClose}
-            />
+            {message && (
+              <p className="text-gray-600 text-base">{message}</p>
+            )}
+            {!message && (
+              <Button
+                buttonText="Back"
+                buttonColor="#F27851"
+                textColor="#fff"
+                width="60%"
+                onClick={onClose}
+              />
+            )}
           </div>
         </div>
       </DialogContent>

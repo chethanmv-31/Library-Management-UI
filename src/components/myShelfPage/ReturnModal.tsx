@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  setShowPendingPayments,
+  selectShowPendingPayments,
+  resetReturnModal
+} from '../../store/slices/returnModalSlice';
 
 interface ReturnModalProps {
   isOpen: boolean;
@@ -21,12 +27,29 @@ const ReturnModal: React.FC<ReturnModalProps> = ({
   isOpen, 
   onClose, 
   bookSerialNo = "",
-  onSubmit 
+  onSubmit,
 }) => {
+  const dispatch = useDispatch();
+  
+  // Local state
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [serialNo, setSerialNo] = useState(bookSerialNo);
   const penalties = 100; // Fixed penalty for demo
+
+  useEffect(() => {
+    if (bookSerialNo) {
+      setSerialNo(bookSerialNo);
+    }
+  }, [bookSerialNo]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFromDate(dayjs());
+      setToDate(dayjs());
+      setSerialNo(bookSerialNo);
+    }
+  }, [isOpen, dispatch, bookSerialNo]);
 
   const handleSubmit = () => {
     onSubmit({
@@ -35,6 +58,7 @@ const ReturnModal: React.FC<ReturnModalProps> = ({
       serialNo,
       penalties
     });
+    dispatch(setShowPendingPayments(true));
   };
 
   return (

@@ -191,6 +191,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ isOpen, onClose }) => {
       <SuccessModal 
         isOpen={showSuccess} 
         onClose={handleBorrow}
+        title="Process Completed"
       />
     </>
   );
