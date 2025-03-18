@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import BookCover from './BookCover';
-import { useDispatch } from 'react-redux';
-import { setShowPendingPayments } from '@/store/slices/returnModalSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowPendingPayments, setShowPaymentModal, selectShowPaymentModal } from '@/store/slices/returnModalSlice';
 import PaymentModal from './PaymentModal';
 import SuccessModal from '../SuccessModal';
 
@@ -29,7 +29,6 @@ interface PaymentFormData {
 const PendingPayments: React.FC = () => {
   const dispatch = useDispatch();
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Sample data - replace with actual data from your backend
@@ -50,17 +49,17 @@ const PendingPayments: React.FC = () => {
 
   const handlePayNow = (book: Book) => {
     setSelectedBook(book);
-    setShowPaymentModal(true);
+    dispatch(setShowPaymentModal(true));
   };
 
   const handleModalClose = () => {
-    setShowPaymentModal(false);
+    dispatch(setShowPaymentModal(false));
     setSelectedBook(null);
   };
 
   const handlePaymentSubmit = (data: PaymentFormData) => {
     console.log('Payment submitted:', data);
-    setShowPaymentModal(false);
+    dispatch(setShowPaymentModal(false));
   };
 
   const handleBack = () => {
@@ -120,15 +119,12 @@ const PendingPayments: React.FC = () => {
         ))}
       </div>
 
-      {selectedBook && (
         <PaymentModal
-          isOpen={showPaymentModal}
           onClose={handleModalClose}
-          amount={selectedBook.charges + selectedBook.penalties}
           onSubmit={handlePaymentSubmit}
           setShowSuccess={setShowSuccess}
         />
-      )}
+
       <SuccessModal 
         isOpen={showSuccess} 
         onClose={() => {

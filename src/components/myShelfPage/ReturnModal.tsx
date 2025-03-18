@@ -7,8 +7,8 @@ import dayjs from "dayjs";
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   setShowPendingPayments,
-  selectShowPendingPayments,
-  resetReturnModal
+  setShowPaymentModal,
+  selectShowPaymentModal
 } from '../../store/slices/returnModalSlice';
 
 interface ReturnModalProps {
@@ -35,6 +35,7 @@ const ReturnModal: React.FC<ReturnModalProps> = ({
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [serialNo, setSerialNo] = useState(bookSerialNo);
+
   const penalties = 100; // Fixed penalty for demo
 
   useEffect(() => {
@@ -59,6 +60,19 @@ const ReturnModal: React.FC<ReturnModalProps> = ({
       penalties
     });
     dispatch(setShowPendingPayments(true));
+    dispatch(setShowPaymentModal(true));
+
+  };
+
+  const handleCredit = () => {
+    onSubmit({
+      fromDate: fromDate.format('DD MMM YYYY'),
+      toDate: toDate.format('DD MMM YYYY'),
+      serialNo,
+      penalties
+    });
+    dispatch(setShowPendingPayments(true));
+
   };
 
   return (
@@ -155,7 +169,7 @@ const ReturnModal: React.FC<ReturnModalProps> = ({
               Pay Now
             </button>
             <button
-              onClick={onClose}
+              onClick={handleCredit}
               className="w-[50%] py-3 bg-gray-700 text-white rounded-md font-medium hover:bg-gray-600 transition-colors"
             >
               Credit

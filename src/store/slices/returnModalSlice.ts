@@ -3,10 +3,12 @@ import { RootState } from '../store';
 
 interface ReturnModalState {
   showPendingPayments: boolean;
+  showPaymentModal: boolean;
 }
 
 const initialState: ReturnModalState = {
   showPendingPayments: false,
+  showPaymentModal: false,
 };
 
 const returnModalSlice = createSlice({
@@ -16,6 +18,9 @@ const returnModalSlice = createSlice({
     setShowPendingPayments: (state, action: PayloadAction<boolean>) => {
       state.showPendingPayments = action.payload;
     },
+    setShowPaymentModal: (state, action: PayloadAction<boolean>) => {
+      state.showPaymentModal = action.payload;
+    },
     resetReturnModal: (state) => {
       return initialState;
     },
@@ -24,10 +29,12 @@ const returnModalSlice = createSlice({
 
 export const {
   setShowPendingPayments,
+  setShowPaymentModal,
   resetReturnModal,
 } = returnModalSlice.actions;
 
 // Selectors
 export const selectShowPendingPayments = (state: RootState) => state.returnModal.showPendingPayments;
+export const selectShowPaymentModal = (state: RootState) => state.returnModal.showPaymentModal;
 
 export default returnModalSlice.reducer; 

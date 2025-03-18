@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { Open_Sans } from 'next/font/google';
 import  SuccessModal from '../SuccessModal';
+import {selectShowPaymentModal} from '@/store/slices/returnModalSlice';
+import {useSelector} from 'react-redux';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
 interface PaymentModalProps {
-  isOpen: boolean;
   onClose: () => void;
-  amount: number;
   onSubmit: (data: PaymentFormData) => void;
   setShowSuccess: (showSuccess: boolean) => void;
 }
@@ -28,7 +28,7 @@ interface FormErrors {
   cvv?: string;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, onSubmit, setShowSuccess }) => {
+const PaymentModal: React.FC<PaymentModalProps> = ({ onClose, onSubmit, setShowSuccess }) => {
   const [formData, setFormData] = useState<PaymentFormData>({
     cardNumber: '',
     cardHolder: '',
@@ -38,6 +38,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const showPaymentModal = useSelector(selectShowPaymentModal);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -175,7 +176,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
   return (
     <>
       <Dialog 
-        open={isOpen} 
+        open={showPaymentModal} 
         onClose={onClose}
         maxWidth="sm"
         fullWidth
@@ -294,7 +295,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
                 </div>
 
                 <div className="flex justify-between items-center pt-4">
-                  <div className="text-lg font-semibold">TOTAL: ₹{amount}</div>
+                  <div className="text-lg font-semibold">TOTAL: ₹100</div>
                   <button
                     type="submit"
                     className="bg-[#F27851] text-white px-8 py-3 rounded-md hover:bg-[#e16643] transition-colors font-medium"
