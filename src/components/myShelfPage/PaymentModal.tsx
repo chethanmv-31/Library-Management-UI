@@ -21,6 +21,13 @@ interface PaymentFormData {
   saveCard: boolean;
 }
 
+interface FormErrors {
+  cardNumber?: string;
+  cardHolder?: string;
+  expiry?: string;
+  cvv?: string;
+}
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, onSubmit, setShowSuccess }) => {
   const [formData, setFormData] = useState<PaymentFormData>({
     cardNumber: '',
@@ -30,19 +37,103 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
     saveCard: false
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setShowSuccess(true);
-    onSubmit(formData);
-    console.log(formData, "formData");
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    let isValid = true;
+
+    // Validate Card Number (16 digits)
+    const cardNumberDigits = formData.cardNumber.replace(/\s/g, '');
+    if (!cardNumberDigits || cardNumberDigits.length !== 16 || !/^\d+$/.test(cardNumberDigits)) {
+      newErrors.cardNumber = 'Please enter a valid 16-digit card number';
+      isValid = false;
+    }
+
+    // Validate Card Holder (only letters and spaces)
+    if (!formData.cardHolder || !/^[A-Za-z\s]+$/.test(formData.cardHolder)) {
+      newErrors.cardHolder = 'Please enter a valid cardholder name';
+      isValid = false;
+    }
+
+    // Validate Expiry (MM/YY format)
+    const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+    if (!formData.expiry || !expiryRegex.test(formData.expiry)) {
+      newErrors.expiry = 'Please enter a valid expiry date (MM/YY)';
+      isValid = false;
+    } else {
+      const [month, year] = formData.expiry.split('/');
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear() % 100; // Get last 2 digits of current year
+      const currentMonth = currentDate.getMonth() + 1; // Get current month (1-12)
+      const expiryYear = parseInt(year);
+      const expiryMonth = parseInt(month);
+
+      // Check if the card is expired
+      if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+        newErrors.expiry = 'Card has expired';
+        isValid = false;
+      }
+
+      // Check if the expiry date is too far in the future (more than 10 years)
+      if (expiryYear > currentYear + 10) {
+        newErrors.expiry = 'Invalid expiry year';
+        isValid = false;
+      }
+    }
+
+    // Validate CVV (3 or 4 digits)
+    if (!formData.cvv || !/^[0-9]{3,4}$/.test(formData.cvv)) {
+      newErrors.cvv = 'Please enter a valid CVV';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
-  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setShowSuccess(true);
+      onSubmit(formData);
+      console.log(formData, "formData");
+    }
+  };
 
   const formatCreditCardNumber = (value: string) => {
     const digitsOnly = value.replace(/\D/g, '');
     const formattedNumber = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-    return formattedNumber.substring(0, 19); // Limit to 16 digits + 3 spaces
+    return formattedNumber.substring(0, 19);
+  };
+
+  const formatExpiryDate = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    // Handle backspace and deletion
+    if (digitsOnly.length === 0) return '';
+    
+    // Format first digit (can only be 0 or 1)
+    if (digitsOnly.length === 1) {
+      if (!/[0-1]/.test(digitsOnly)) return '';
+      return digitsOnly;
+    }
+    
+    // Format second digit (if first digit is 0, can be 1-9; if 1, can be 0-2)
+    if (digitsOnly.length === 2) {
+      const month = parseInt(digitsOnly);
+      if (month < 1 || month > 12) return digitsOnly.charAt(0);
+      return digitsOnly;
+    }
+    
+    // Add slash after month
+    if (digitsOnly.length >= 2) {
+      const month = digitsOnly.slice(0, 2);
+      const year = digitsOnly.slice(2, 4);
+      return `${month}/${year}`;
+    }
+    
+    return digitsOnly;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,10 +145,29 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
         ...prev,
         [name]: formattedValue
       }));
+    } else if (name === 'expiry') {
+      const formattedValue = formatExpiryDate(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedValue
+      }));
+    } else if (name === 'cvv') {
+      const cvvValue = value.replace(/\D/g, '').slice(0, 4);
+      setFormData(prev => ({
+        ...prev,
+        [name]: cvvValue
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
         [name]: type === 'checkbox' ? checked : value
+      }));
+    }
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
       }));
     }
   };
@@ -115,8 +225,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
                     value={formData.cardNumber}
                     onChange={handleInputChange}
                     placeholder="XXXX XXXX XXXX 8014"
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm"
+                    className={`w-full p-2 border ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm`}
                   />
+                  {errors.cardNumber && (
+                    <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>
+                  )}
                 </div>
 
                 <div>
@@ -127,8 +240,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
                     value={formData.cardHolder}
                     onChange={handleInputChange}
                     placeholder="REINHARD KENSON"
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm"
+                    className={`w-full p-2 border ${errors.cardHolder ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm`}
                   />
+                  {errors.cardHolder && (
+                    <p className="text-red-500 text-xs mt-1">{errors.cardHolder}</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -139,9 +255,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
                       name="expiry"
                       value={formData.expiry}
                       onChange={handleInputChange}
-                      placeholder="08/21"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm"
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      className={`w-full p-2 border ${errors.expiry ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm`}
                     />
+                    {errors.expiry && (
+                      <p className="text-red-500 text-xs mt-1">{errors.expiry}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500 mb-1">CVV</label>
@@ -151,8 +271,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, on
                       value={formData.cvv}
                       onChange={handleInputChange}
                       placeholder="XXX"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm"
+                      maxLength={4}
+                      className={`w-full p-2 border ${errors.cvv ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] outline-none shadow-sm`}
                     />
+                    {errors.cvv && (
+                      <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>
+                    )}
                   </div>
                 </div>
 
