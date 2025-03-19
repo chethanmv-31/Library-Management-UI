@@ -3,15 +3,15 @@ import {
   Box,
   Drawer,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
 } from "@mui/material";
-import { Home, Settings, Info } from "@mui/icons-material";
+import { Home } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Image from "next/image";
 import Link from "next/link";
 const Sidebar = () => {
@@ -48,29 +48,38 @@ const Sidebar = () => {
         <div className="flex justify-center">
           <List>
             <Link href={"/"}>
-              <ListItem button key="Home">
+              <ListItemButton component="button" key="Home">
                 <ListItemIcon sx={{ minWidth: "30px" }}>
                   <Home />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
-              </ListItem>
+              </ListItemButton>
             </Link>
             <Link href={"/search"}>
-              <ListItem button key="Search">
+              <ListItemButton component="button" key="Search">
                 <ListItemIcon sx={{ minWidth: "30px" }}>
                   <SearchIcon />
                 </ListItemIcon>
                 <ListItemText primary="Search" />
-              </ListItem>
+              </ListItemButton>
             </Link>
 
             <Link href={"/myShelf"}>
-            <ListItem button key="My Shelf">
-              <ListItemIcon sx={{ minWidth: "30px" }}>
-                <ApartmentIcon />
-              </ListItemIcon>
-              <ListItemText primary="My Shelf" />
-            </ListItem>
+              <ListItemButton component="button" key="My Shelf">
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <ApartmentIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Shelf" />
+              </ListItemButton>
+            </Link>
+            
+            <Link href={"/contribute"}>
+              <ListItemButton component="button" key="My Shelf">
+                <ListItemIcon sx={{ minWidth: "30px" }}>
+                  <VolunteerActivismIcon />
+                </ListItemIcon>
+                <ListItemText primary="Contribute" />
+              </ListItemButton>
             </Link>
           </List>
         </div>
