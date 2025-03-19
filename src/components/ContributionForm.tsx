@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ContributionSuccess from "./ContributionSuccess";
 
 interface ContributionFormProps {
   onSubmit: (formData: any) => void;
@@ -25,6 +26,7 @@ export default function ContributionForm({ onSubmit }: ContributionFormProps) {
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
     const newErrors: ValidationErrors = {};
@@ -78,8 +80,13 @@ export default function ContributionForm({ onSubmit }: ContributionFormProps) {
         reason,
         formats,
       });
+      setIsSubmitted(true);
     }
   };
+
+  if (isSubmitted) {
+    return <ContributionSuccess />;
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">

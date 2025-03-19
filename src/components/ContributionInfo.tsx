@@ -15,21 +15,21 @@ export default function ContributionInfo() {
       author: "Steve Krug",
       year: 2000,
       readers: 14000,
-      coverImage: "/books/dont-make-me-think.jpg"
+      coverImage: "/assets/Rectangle 12.png"
     },
     {
       title: "The Design of Everyday Things",
       author: "Don Norman",
       year: 1988,
       readers: 14000,
-      coverImage: "/books/design-of-everyday-things.jpg"
+      coverImage: "/assets/Rectangle 12.png"
     },
     {
       title: "Sprint: How to solve big problems",
       author: "Jake Knapp",
       year: 2000,
       readers: 14000,
-      coverImage: "/books/sprint.jpg"
+      coverImage: "/assets/Rectangle 12.png"
     }
   ];
 
@@ -50,7 +50,7 @@ export default function ContributionInfo() {
                   src={book.coverImage}
                   alt={book.title}
                   fill
-                  className="object-cover rounded-lg"
+                  className="object-fit rounded-lg"
                 />
               </div>
               <h4 className="font-semibold text-sm mb-1">{book.title}</h4>
