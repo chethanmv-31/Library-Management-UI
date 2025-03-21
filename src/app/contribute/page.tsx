@@ -21,7 +21,7 @@ export default function ContributionPage() {
   };
 
   return (
-    <div>
+    <div className="h-screen">
       {isContributionSubmitted ? (
         <button
           onClick={handleBack}
@@ -44,7 +44,7 @@ export default function ContributionPage() {
         <div className="lex items-center text-gray-600 mb-8 pb-7 hover:text-gray-800"></div>
       )}
       <div className="">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Left side - Form */}
           {isContributionSubmitted ? (
             <ContributionSuccess />
@@ -53,7 +53,10 @@ export default function ContributionPage() {
           )}
 
           {/* Right side - Contribution Info */}
+          <div  className="w-[35rem]">
+
           <ContributionInfo />
+          </div>
         </div>
       </div>
     </div>

@@ -35,13 +35,13 @@ export default function ContributionInfo() {
 
   return (
     <div>
-      <h1 className="text-5xl font-bold mb-4">
+      <h1 className="text-5xl font-bold mb-4  text-[#4D4D4D]">
         Your <span className="text-[#E76F51]">Contribution</span>
       </h1>
-      <h2 className="text-5xl font-bold mb-12">Helps Other to Learn</h2>
+      <h2 className="text-5xl font-bold mb-12 text-[#4D4D4D]">Helps Other to Learn</h2>
 
       <div>
-        <h3 className="text-2xl font-semibold mb-6">Your Previous Contributions</h3>
+        <h3 className="text-1xl font-semibold mb-6 text-[#4D4D4D]">Your Previous Contributions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {previousContributions.map((book, index) => (
             <div key={index} className="bg-white p-4 rounded-lg shadow-sm">
@@ -53,7 +53,7 @@ export default function ContributionInfo() {
                   className="object-fit rounded-lg"
                 />
               </div>
-              <h4 className="font-semibold text-sm mb-1">{book.title}</h4>
+              <h4 className="font-semibold text-sm mb-1 truncate">{book.title}</h4>
               <p className="text-sm text-gray-600">{book.author}, {book.year}</p>
               <p className="text-sm text-gray-500">{book.readers} Readers</p>
             </div>
@@ -62,4 +62,4 @@ export default function ContributionInfo() {
       </div>
     </div>
   );
-} 
+}
