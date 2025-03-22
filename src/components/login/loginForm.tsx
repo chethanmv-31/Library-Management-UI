@@ -110,10 +110,12 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
           role: "ADMIN",
         });
 
-        +localStorage.setItem("accessToken", response.accessToken);
+        localStorage.setItem("accessToken", response.accessToken);
 
-        // Redirect to home page
-        router.push("/");
+        // Get the stored redirect path or default to home
+        const redirectPath = localStorage.getItem('redirectPath') || '/';
+        localStorage.removeItem('redirectPath'); // Clean up
+        router.push(redirectPath);
       } catch (error) {
         console.error("Login failed:", error);
       }

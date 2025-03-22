@@ -1,8 +1,9 @@
 "use client";
 
-import ContributionForm from "@/components/ContributionForm";
-import ContributionInfo from "@/components/ContributionInfo";
-import ContributionSuccess from "@/components/ContributionSuccess";
+import ContributionForm from "@/components/contribution/ContributionForm";
+import ContributionInfo from "@/components/contribution/ContributionInfo";
+import ContributionSuccess from "@/components/contribution/ContributionSuccess";
+import {ProtectedRoute} from "@/components/ProtectedRoute";
 import { useState } from "react";
 
 export default function ContributionPage() {
@@ -21,6 +22,8 @@ export default function ContributionPage() {
   };
 
   return (
+    <ProtectedRoute>
+
     <div>
       {isContributionSubmitted ? (
         <button
@@ -57,5 +60,7 @@ export default function ContributionPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
+
   );
 }

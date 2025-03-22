@@ -1,6 +1,8 @@
 import axios from "axios";
+import { store } from "@/store/store";
+import { setShowLoginAlert } from "@/store/slices/authSlice";
 
-const BASE_URL = "http://localhost:3001/auth";
+const BASE_URL = "http://localhost:3000/auth";
 
 interface SignUpPayload {
   username: string;
@@ -14,10 +16,6 @@ interface SigninPayload {
   username: string;
   password: string;
   role: string;
-}
-
-interface SigninResponse {
-  accessToken: string;
 }
 
 export const authService = {
@@ -45,12 +43,16 @@ export const authService = {
     return !!token;
   },
 
-  requireAuth: (redirect: () => void) => {
+  requireAuth: () => {
     if (!authService.isAuthenticated()) {
-      alert('Please login to access this feature');
-      redirect();
+      store.dispatch(setShowLoginAlert(true));
       return false;
     }
     return true;
+  },
+
+  handleLoginAction: (navigateToLogin: () => void) => {
+    store.dispatch(setShowLoginAlert(false));
+    navigateToLogin();
   }
 };

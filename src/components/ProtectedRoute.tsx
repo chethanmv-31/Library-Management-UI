@@ -9,7 +9,9 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const router = useRouter();
 
-  if (!authService.requireAuth(() => router.push('/login'))) {
+  if (!authService.isAuthenticated()) {
+    authService.requireAuth();
+    router.push('/');
     return null;
   }
 
