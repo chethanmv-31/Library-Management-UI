@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "@/store/store";
 import { setShowLoginAlert } from "@/store/slices/authSlice";
 
-const BASE_URL = "http://localhost:3000/auth";
+const BASE_URL = process.env.NEXT_PUBLIC_API_AUTH_URL;
 
 interface SignUpPayload {
   username: string;
@@ -12,6 +12,7 @@ interface SignUpPayload {
   password: string;
   role: string;
 }
+
 interface SigninPayload {
   username: string;
   password: string;

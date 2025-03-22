@@ -56,6 +56,7 @@ export default function ClientLayout({
                   padding: "3rem",
                   paddingTop: "2rem",
                   height: "fit-content",
+                  // position:"fixed"
                 }),
           }}
         >
