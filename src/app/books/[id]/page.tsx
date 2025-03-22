@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Image from "next/image";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
@@ -18,11 +18,38 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OverViewSection from "@/components/detailsPage/OverviewSection";
 import BorrowModal from "@/components/modals/BorrowModal";
+import { Book } from "@/types/book";
+import { getBookById } from "@/services/bookService";
+import { useRouter } from "next/navigation";
 
-const BookDetailsPage = () => {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+const BookDetailsPage = ({ params }: PageProps) => {
+  const router = useRouter();
   const [value, setValue] = useState<number | null>(2);
+  const [book, setBook] = useState<Book | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const isHardCopyAvailable = false;
+  useEffect(() => {
+    const fetchBookDetails = async () => {
+      try {
+        const bookData = await getBookById(params.id);
+        setBook(bookData);
+      } catch (error) {
+        console.error("Error fetching book details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookDetails();
+  }, [params.id]);
+
+  const isHardCopyAvailable = book?.stock === "IN_STOCK";
   const isEbookAvailable = true;
   const isAudioAvailable = true;
   const [data, setData] = React.useState("1");
@@ -42,10 +69,29 @@ const BookDetailsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (!book) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-xl text-gray-600">Book not found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[750px] overflow-y-auto scrollbar-hide">
       <div className="flex items-center gap-3 pb-4">
-        <ArrowBackIcon sx={{ color: "#4D4D4D" }} />
+        <ArrowBackIcon 
+          sx={{ color: "#4D4D4D", cursor: 'pointer' }} 
+          onClick={() => router.back()}
+        />
         <p>Back to results</p>
       </div>
       <div className="flex justify-between">
@@ -53,11 +99,11 @@ const BookDetailsPage = () => {
           <div className="grid gap-12 overflow-y-auto scrollbar-hide">
             <div className="bg-white w-[273px] h-[390px] p-5 rounded-md">
               <Image
-                src="/assets/Rectangle 12.png"
-                alt={""}
+                src={book.image || "/assets/Rectangle 12.png"}
+                alt={book.title}
                 width={209}
                 height={277}
-                className="rounded-md mx-auto border border-black"
+                className="rounded-md mx-auto max-w-[209px] max-h-[277px] border border-black"
               />
               <div className="flex justify-around my-5">
                 <div className="flex flex-col items-center">
@@ -73,18 +119,18 @@ const BookDetailsPage = () => {
           </div>
           <div className="w-[505px]">
             <p className="text-[35px] text-[#4D4D4D] pb-[38px]">
-              Don&apos;t Make Me Think{" "}
+              {book.title}
             </p>
 
             <p className="pb-4">
               By&nbsp;
               <Link href={""} className="underline text-[15px] ">
-                Steve Krug,
+                {book.author.author_Name}
               </Link>
-              &nbsp;2000
+              &nbsp;{new Date(book.created_at).getFullYear()}
             </p>
 
-            <p className="text-[15px] text-[#9A9A9A] ">Second Edition</p>
+            <p className="text-[15px] text-[#9A9A9A] ">{book.edition} Edition</p>
 
             <div className="flex justify-between">
               <div className="flex gap-2">
@@ -135,8 +181,8 @@ const BookDetailsPage = () => {
               <div>
                 <p className="w-[140px] text-[15px] font-bold pb-2">Status</p>
                 <div className=" flex flex-col gap-3">
-                  <p className="w-[85px] h-[26px] bg-[#42BB4E] text-white text-center rounded-md">
-                    In-Shelf
+                  <p className={`w-[85px] h-[26px] ${book.stock === "IN_STOCK" ? "bg-[#42BB4E]" : "bg-[#FF4444]"} text-white text-center rounded-md`}>
+                    {book.stock === "IN_STOCK" ? "In-Shelf" : "Out of Stock"}
                   </p>
                   <div className="flex justify-between items-center w-[85px]">
                     <FmdGoodIcon sx={{ color: "#F76B56" }} />
@@ -176,7 +222,7 @@ const BookDetailsPage = () => {
             <span className="text-[#F27851]">About</span> Author
           </p>
           <div className="flex items-center gap-16">
-            <p className="text-xl w-[160px]">Steve Krug</p>
+            <p className="text-xl w-[160px]">{book.author.author_Name}</p>
             <Image
               src="/assets/Rectangle 19 (1).png"
               alt={""}
@@ -185,11 +231,7 @@ const BookDetailsPage = () => {
             />
           </div>
           <p className="text-[13px] my-1">
-            Steve Krug is a usability consultant who has more than 30 years of
-            experience as a user advocate for companies like Apple, Netscape,
-            AOL, Lexus, and others. Based in part on the success of his first
-            book, Don&apos;t Make Me Think, he has become a highly sought-after
-            speaker on usability design.
+            {book.author.author_Name} is the author of this book. More details about the author will be available soon.
           </p>
           <p className="text-[15px] mt-3 font-bold">Other Books</p>
 
@@ -276,6 +318,7 @@ const BookDetailsPage = () => {
               </Box>
               <TabPanel value="1" sx={{ padding: 0, paddingTop: 3 }}>
                 <OverViewSection />
+                {/* <OverViewSection book={book} /> */}
               </TabPanel>
               <TabPanel value="2">Item Two</TabPanel>
               <TabPanel value="3">Item Three</TabPanel>
@@ -290,6 +333,7 @@ const BookDetailsPage = () => {
       <BorrowModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        // book={book}
       />
     </div>
   );

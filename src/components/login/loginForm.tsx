@@ -130,7 +130,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
         const response = await authService.signin({
           username: data.userName,
           password: data.password,
-          role: "ADMIN",
+          role: "STUDENT",
         });
 
         localStorage.setItem("accessToken", response.accessToken);
