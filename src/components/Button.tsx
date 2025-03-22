@@ -1,10 +1,10 @@
 import React from "react";
 
 interface PropTypes {
-  buttonText: string;
-  buttonColor: string;
-  textColor: string;
-  width: string;
+  buttonText?: string;
+  buttonColor?: string;
+  textColor?: string;
+  width?: string;
   icon?: any;
   onClick?: () => void;
 }

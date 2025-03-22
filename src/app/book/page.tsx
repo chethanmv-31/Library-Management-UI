@@ -17,7 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OverViewSection from "@/components/detailsPage/OverviewSection";
-import BorrowModal from "@/components/BorrowModal";
+import BorrowModal from "@/components/modals/BorrowModal";
 
 const BookDetailsPage = () => {
   const [value, setValue] = useState<number | null>(2);

@@ -19,7 +19,9 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import OtpVerification from "./OtpVerification";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+
+import { authService } from "@/services/authService";
 
 interface TypeProps {
   header: string;
@@ -51,20 +53,24 @@ const CustomTextField = styled(TextField)({
   // Add these styles to align the helper text
   "& .MuiFormHelperText-root": {
     marginLeft: 0,
-    marginRight: 0
-  }
+    marginRight: 0,
+  },
 });
 
 const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
   const router = useRouter();
-  const { control, handleSubmit, formState: { errors } } = useForm<IFormInput>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>({
     defaultValues: {
-      userName: '',
-      email: '',
-      firstName: '',
-      lastName: '',
-      password: ''
-    }
+      userName: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+    },
   });
   const dispatch = useDispatch();
   const formState = useSelector((state: RootState) => state.form);
@@ -79,15 +85,40 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
     event.preventDefault();
   };
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     dispatch(updateForm(data));
-    console.log("data====", data);
-    
-    // Navigate to home page after successful login/registration
-    if (!isSignUp) {
-      router.push('/');
+
+    if (isSignUp) {
+      try {
+        await authService.signup({
+          username: data.userName,
+          email: data.email,
+          firstname: data.firstName,
+          lastname: data.lastName,
+          password: data.password,
+          role: "ADMIN",
+        });
+        router.push("/login");
+      } catch (error) {
+        console.error("Signup failed:", error);
+      }
     } else {
-      router.push('/login');
+      try {
+        const response = await authService.signin({
+          username: data.userName,
+          password: data.password,
+          role: "ADMIN",
+        });
+
+        localStorage.setItem("accessToken", response.accessToken);
+
+        // Get the stored redirect path or default to home
+        const redirectPath = localStorage.getItem('redirectPath') || '/';
+        localStorage.removeItem('redirectPath'); // Clean up
+        router.push(redirectPath);
+      } catch (error) {
+        console.error("Login failed:", error);
+      }
     }
   };
 
@@ -101,7 +132,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
     return <OtpVerification onBack={() => setShowVerification(false)} />;
   }
   const handleGuestClick = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
@@ -140,7 +171,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
             <Controller
               name="userName"
               control={control}
-              rules={{ required: 'Username is required' }}
+              rules={{ required: "Username is required" }}
               render={({ field }) => (
                 <CustomTextField
                   {...field}
@@ -161,11 +192,11 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                   name="email"
                   control={control}
                   rules={{
-                    required: 'Email is required',
+                    required: "Email is required",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address'
-                    }
+                      message: "Invalid email address",
+                    },
                   }}
                   render={({ field }) => (
                     <CustomTextField
@@ -179,11 +210,13 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 />
               </div>
               <div className="mb-5">
-                <p className="text-left text-[16px] font-semibold">First name</p>
+                <p className="text-left text-[16px] font-semibold">
+                  First name
+                </p>
                 <Controller
                   name="firstName"
                   control={control}
-                  rules={{ required: 'First name is required' }}
+                  rules={{ required: "First name is required" }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
@@ -200,7 +233,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 <Controller
                   name="lastName"
                   control={control}
-                  rules={{ required: 'Last name is required' }}
+                  rules={{ required: "Last name is required" }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
@@ -221,11 +254,11 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
               name="password"
               control={control}
               rules={{
-                required: 'Password is required',
+                required: "Password is required",
                 minLength: {
                   value: 6,
-                  message: 'Password must be at least 6 characters'
-                }
+                  message: "Password must be at least 6 characters",
+                },
               }}
               render={({ field }) => (
                 <OutlinedInput
@@ -264,7 +297,9 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
               )}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm text-left mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm text-left mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
           {!isSignUp && (
@@ -320,11 +355,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
             </>
           )}
         </div>
-        <button 
-          onClick={handleGuestClick}
-        >
-          Use as Guest
-        </button>
+        <button onClick={handleGuestClick}>Use as Guest</button>
       </div>
     </div>
   );
