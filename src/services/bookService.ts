@@ -2,7 +2,7 @@ import { Book } from '@/types/book';
 
 const API_URL = process.env.NEXT_PUBLIC_API_BOOKS_URL;
 
-export const getLatestBooks = async (): Promise<Book[]> => {
+export const getAllBooks = async (): Promise<Book[]> => {
   try {
     const response = await fetch(`${API_URL}`, {
       headers: {

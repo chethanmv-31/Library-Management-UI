@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 import { Book } from "@/types/book";
-import { getLatestBooks } from "@/services/bookService";
+import { getAllBooks } from "@/services/bookService";
 import { useRouter } from "next/navigation";
 
 const NewArrivals = () => {
@@ -13,7 +13,7 @@ const NewArrivals = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const latestBooks = await getLatestBooks();
+        const latestBooks = await getAllBooks();
         const sortedBooks = latestBooks
           .sort(
             (a: Book, b: Book) =>
