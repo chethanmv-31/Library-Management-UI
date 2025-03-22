@@ -3,10 +3,10 @@ import React from "react";
 const Quotes: React.FC = () => {
   return (
     <div className="bg-gradient-to-b from-[#EB5231] to-[#8A317C] rounded-lg p-7 text-white w-[543px] mx-auto shadow-lg">
-      <h2 className="text-[25px] font-[500]">Today's Quote</h2>
+      <h2 className="text-[25px] font-[500]">Today&apos;s Quote</h2>
       <p className="mt-4 text-xl ">
-        “There is more treasure in books than in all the pirate’s loot on
-        Treasure Island.”
+        &quot;There is more treasure in books than in all the pirate&apos;s loot on
+        Treasure Island.&quot;
       </p>
 
       <p className="mt-5 text-right ">-Walt Disney</p>

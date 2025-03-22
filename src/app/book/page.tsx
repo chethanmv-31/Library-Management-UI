@@ -73,7 +73,7 @@ const BookDetailsPage = () => {
           </div>
           <div className="w-[505px]">
             <p className="text-[35px] text-[#4D4D4D] pb-[38px]">
-              Don’t Make Me Think{" "}
+              Don&apos;t Make Me Think{" "}
             </p>
 
             <p className="pb-4">
@@ -188,7 +188,7 @@ const BookDetailsPage = () => {
             Steve Krug is a usability consultant who has more than 30 years of
             experience as a user advocate for companies like Apple, Netscape,
             AOL, Lexus, and others. Based in part on the success of his first
-            book, Don't Make Me Think, he has become a highly sought-after
+            book, Don&apos;t Make Me Think, he has become a highly sought-after
             speaker on usability design.
           </p>
           <p className="text-[15px] mt-3 font-bold">Other Books</p>
