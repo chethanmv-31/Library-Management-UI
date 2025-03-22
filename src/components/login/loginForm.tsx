@@ -14,9 +14,9 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import OtpVerification from "./OtpVerification";
 
 import { useRouter } from "next/navigation";
@@ -63,6 +63,8 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
+    clearErrors,
   } = useForm<IFormInput>({
     defaultValues: {
       userName: "",
@@ -71,11 +73,21 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
       lastName: "",
       password: "",
     },
+    mode: "onSubmit",
   });
   const dispatch = useDispatch();
-  const formState = useSelector((state: RootState) => state.form);
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
+  const [errorField, setErrorField] = useState<string>("");
+
+  // Clear API error when user starts typing
+  const handleInputChange = (field: string) => {
+    if (apiError && errorField === field) {
+      setApiError("");
+      setErrorField("");
+    }
+  };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -86,7 +98,9 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
   };
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    dispatch(updateForm(data));
+    setApiError(""); // Clear any previous errors
+    setErrorField(""); // Clear error field
+    clearErrors(); // Clear any previous form validation errors
 
     if (isSignUp) {
       try {
@@ -99,8 +113,17 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
           role: "ADMIN",
         });
         router.push("/login");
-      } catch (error) {
-        console.error("Signup failed:", error);
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message;
+        if (errorMessage?.includes("username")) {
+          setApiError("Username already exists. Please choose a different username.");
+          setErrorField("userName");
+        } else if (errorMessage?.includes("email")) {
+          setApiError("Email already registered. Please use a different email.");
+          setErrorField("email");
+        } else {
+          setApiError(errorMessage || "Signup failed. Please try again.");
+        }
       }
     } else {
       try {
@@ -111,13 +134,12 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
         });
 
         localStorage.setItem("accessToken", response.accessToken);
-
-        // Get the stored redirect path or default to home
         const redirectPath = localStorage.getItem('redirectPath') || '/';
-        localStorage.removeItem('redirectPath'); // Clean up
+        localStorage.removeItem('redirectPath');
         router.push(redirectPath);
-      } catch (error) {
-        console.error("Login failed:", error);
+      } catch (error: any) {
+        setApiError(error.response?.data?.message || "Invalid username or password");
+        setErrorField("credentials");
       }
     }
   };
@@ -175,10 +197,27 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
               render={({ field }) => (
                 <CustomTextField
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleInputChange("userName");
+                  }}
                   size="small"
                   autoComplete="username"
-                  error={!!errors.userName}
-                  helperText={errors.userName?.message}
+                  error={!!errors.userName || (errorField === "userName" && !!apiError)}
+                  helperText={errors.userName?.message || ((errorField === "userName" && apiError) ? apiError : undefined)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: (!!errors.userName || (errorField === "userName" && !!apiError)) ? "#d32f2f" : "lightgray",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: (!!errors.userName || (errorField === "userName" && !!apiError)) ? "#d32f2f" : "lightgray",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: (!!errors.userName || (errorField === "userName" && !!apiError)) ? "#d32f2f" : "lightgray",
+                      },
+                    },
+                  }}
                 />
               )}
             />
@@ -201,25 +240,37 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange("email");
+                      }}
                       size="small"
                       autoComplete="email"
-                      error={!!errors.email}
+                      error={!!errors.email || (errorField === "email" && !!apiError)}
                       helperText={errors.email?.message}
                     />
                   )}
                 />
               </div>
               <div className="mb-5">
-                <p className="text-left text-[16px] font-semibold">
-                  First name
-                </p>
+                <p className="text-left text-[16px] font-semibold">First name</p>
                 <Controller
                   name="firstName"
                   control={control}
-                  rules={{ required: "First name is required" }}
+                  rules={{ 
+                    required: "First name is required",
+                    pattern: {
+                      value: /^[A-Za-z]+$/,
+                      message: "First name should only contain letters"
+                    }
+                  }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange("firstName");
+                      }}
                       size="small"
                       autoComplete="given-name"
                       error={!!errors.firstName}
@@ -233,10 +284,20 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
                 <Controller
                   name="lastName"
                   control={control}
-                  rules={{ required: "Last name is required" }}
+                  rules={{ 
+                    required: "Last name is required",
+                    pattern: {
+                      value: /^[A-Za-z]+$/,
+                      message: "Last name should only contain letters"
+                    }
+                  }}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange("lastName");
+                      }}
                       size="small"
                       autoComplete="family-name"
                       error={!!errors.lastName}
@@ -263,9 +324,13 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
               render={({ field }) => (
                 <OutlinedInput
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleInputChange("password");
+                  }}
                   id="outlined-adornment-password"
                   type={showPassword ? "text" : "password"}
-                  error={!!errors.password}
+                  error={!!errors.password || (errorField === "credentials" && !!apiError)}
                   sx={{
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "lightgray",
@@ -302,6 +367,11 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
               </p>
             )}
           </div>
+          {apiError && (
+            <p className="text-red-500 text-sm text-left mb-4">
+              {apiError}
+            </p>
+          )}
           {!isSignUp && (
             <div className="flex justify-between items-center mb-9 mt-9">
               <div>
