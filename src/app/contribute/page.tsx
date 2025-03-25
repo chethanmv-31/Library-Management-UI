@@ -15,8 +15,6 @@ export default function ContributionPage() {
     setIsContributionSubmitted(true);
   };
 
-  console.log(isContributionSubmitted, "isContributionSubmitted");
-
   const handleBack = () => {
     setIsContributionSubmitted(false);
   };
