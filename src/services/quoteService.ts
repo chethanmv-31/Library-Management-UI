@@ -1,24 +1,17 @@
 import axios from 'axios';
 
-const options = {
-  method: 'GET',
-  url: process.env.NEXT_PUBLIC_RAPID_API_URL,
-  params: {
-    cat: 'famous',
-    count: '10'
-  },
-  headers: {
-    'x-rapidapi-key': process.env.NEXT_PUBLIC_RAPID_API_KEY,
-    'x-rapidapi-host': process.env.NEXT_PUBLIC_RAPID_API_HOST
-  }
-};
+interface Quote {
+  id: number;
+  quote: string;
+  author: string;
+}
 
-export const getQuotes = async () => {
+export const getQuotes = async (): Promise<Quote> => {
   try {
-    const response = await axios.request(options);
+    const response = await axios.get<Quote>('https://dummyjson.com/quotes/random');
     return response.data;
   } catch (error) {
-    console.error(error);
-    return [];
+    console.error('Error fetching quotes:', error);
+    throw error; // Re-throw the error to handle it in the component
   }
 };

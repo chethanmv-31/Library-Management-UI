@@ -11,7 +11,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import Button from "@/components/Button";
 import HeadphonesRoundedIcon from "@mui/icons-material/HeadphonesRounded";
-import { Box, Tab } from "@mui/material";
+import { Box, Tab, Skeleton } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -27,11 +27,37 @@ interface PageProps {
     };
   }
 
+const LoadingSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="flex items-center gap-3 pb-4">
+      <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+      <div className="h-4 bg-gray-200 rounded w-24"></div>
+    </div>
+    <div className="flex justify-between">
+      <div className="flex gap-[70px]">
+        <div className="w-[273px] h-[390px] bg-gray-200 rounded-md"></div>
+        <div className="w-[505px]">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="flex gap-4 mb-4">
+            <div className="h-6 bg-gray-200 rounded w-24"></div>
+            <div className="h-6 bg-gray-200 rounded w-24"></div>
+          </div>
+        </div>
+      </div>
+      <div className="w-[450px] h-[420px] bg-gray-200 rounded-xl"></div>
+    </div>
+  </div>
+);
+
 const DetailsPage = ({ params }: PageProps) => {
   const router = useRouter();
   const [value, setValue] = useState<number | null>(2);
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quote, setQuote] = useState<string>("");
+  const [quoteLoading, setQuoteLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookDetails = async () => {
@@ -45,7 +71,22 @@ const DetailsPage = ({ params }: PageProps) => {
       }
     };
 
+    const fetchQuote = async () => {
+      try {
+        setQuoteLoading(true);
+        const response = await fetch('https://api.quotable.io/random');
+        const data = await response.json();
+        setQuote(data.content);
+      } catch (error) {
+        console.error("Error fetching quote:", error);
+        setQuote("Reading is a conversation. All books talk. But a good book listens as well.");
+      } finally {
+        setQuoteLoading(false);
+      }
+    };
+
     fetchBookDetails();
+    fetchQuote();
   }, [params.id]);
 
   const isHardCopyAvailable = book?.stock === "IN_STOCK";
@@ -69,11 +110,7 @@ const DetailsPage = ({ params }: PageProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <LoadingSkeleton />;
   }
 
   if (!book) {
