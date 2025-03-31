@@ -1,4 +1,4 @@
-import { Book } from '@/types/book';
+import { Book } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_BOOKS_URL;
 
