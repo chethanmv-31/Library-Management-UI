@@ -1,52 +1,89 @@
 "use client";
 
 import { MenuItem, Select, styled } from "@mui/material";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CancelIcon from "@mui/icons-material/Cancel";
-type AgeOption = 10 | 20 | 30;
+import { getCategories } from '@/services/categoryService';
+import { Category } from '@/types';
+
+const CustomSelect = styled(Select)(({ theme }) => ({
+  borderRadius: "30px",
+  borderColor: "lightgray",
+  width: "350px",
+  height: "49px",
+  backgroundColor: "transparent",
+  outline: "none",
+  paddingLeft: "15px",
+  paddingRight: "15px",
+  "& .MuiSelect-select": {
+    padding: "8px 12px !important",
+    paddingLeft: "10px !important",
+    paddingRight: "32px !important",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "lightgray",
+    },
+    "&:hover fieldset": {
+      borderColor: "lightgray",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "lightgray !important",
+      borderWidth: "1px",
+    },
+  },
+  "& .MuiSelect-select:focus": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiSelect-root": {
+    padding: "8px 12px",
+    "&:focus": {
+      backgroundColor: "transparent",
+    },
+  },
+  "& .MuiMenu-paper": {
+    width: "120px",
+    border: "none",
+    boxShadow: "none",
+  },
+  "& .MuiPopover-paper": {
+    border: "none",
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid lightgray",
+  },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid lightgray",
+    boxShadow: "none",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid lightgray",
+  },
+}));
 
 const Search = () => {
-  const [age, setAge] = React.useState<AgeOption>(10);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
 
-  const CustomSelect = styled(Select)(({ theme }) => ({
-    borderRadius: "30px",
-    borderColor: "lightgray",
-    background: "#fff", // Change to white
-    width: "170px",
-    height: "49px",
-    backgroundColor: "#fff", // Change to white
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "lightgray",
-      },
-      "&:hover fieldset": {
-        borderColor: "lightgray",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "lightgray",
-      },
-    },
-    "& .MuiSelect-select": {
-      borderRadius: "30px",
-      padding: "8px 12px",
-      backgroundColor: "#fff", // Ensures background is white even within the select dropdown
-    },
-    "& .MuiMenu-paper": {
-      width: "120px",
-      border: "none",
-      boxShadow: "none",
-    },
-    "& .MuiPopover-paper": {
-      border: "none",
-    },
-  }));
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (event: any) => {
-    setAge(event.target.value as AgeOption);
+    setSelectedCategory(event.target.value );
   };
 
   const isHardCopyAvailable = false;
@@ -58,12 +95,46 @@ const Search = () => {
       <CustomSelect
         labelId="demo-simple-select-label"
         id="demo-simple-select"
-        value={age}
+        value={selectedCategory}
         onChange={handleChange}
+        MenuProps={{
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+          },
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
+          },
+          PaperProps: {
+            sx: {
+              mt: 1,
+              maxHeight: 300,
+              backgroundColor: '#FFFFFF',
+              boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+              "& .MuiMenuItem-root": {
+                padding: "8px 16px",
+                "&:hover": {
+                  backgroundColor: "#FFF1EE",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#FFE4E0",
+                  color: "#F76B56",
+                  "&:hover": {
+                    backgroundColor: "#FFE4E0",
+                  }
+                }
+              },
+            },
+          },
+        }}
       >
-        <MenuItem value={10}>All</MenuItem>
-        <MenuItem value={20}>Twenty</MenuItem>
-        <MenuItem value={30}>Thirty</MenuItem>
+        <MenuItem value={0}>All Categories</MenuItem>
+        {categories.map((category) => (
+          <MenuItem key={category.id} value={category.id}>
+            {category.category_name}
+          </MenuItem>
+        ))}
       </CustomSelect>
 
       <section>

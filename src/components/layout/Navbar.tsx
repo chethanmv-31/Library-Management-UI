@@ -12,6 +12,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import GTranslateIcon from "@mui/icons-material/GTranslate";
 import { AccessTime, CalendarMonth } from "@mui/icons-material";
+import { getCategories } from '@/services/categoryService';
+import {Category} from "@/types";
 
 type AgeOption = 10 | 20 | 30;
 
@@ -19,7 +21,7 @@ type AgeOption = 10 | 20 | 30;
 const CustomSelect = styled(Select)(({ theme }) => ({
   borderRadius: "30px 0 0 30px",
   borderColor: "lightgray",
-  width: "102px",
+  width: "140px",
   height: "49px",
   backgroundColor: "transparent",
   "& .MuiOutlinedInput-root": {
@@ -116,15 +118,13 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+
 const Navbar: React.FC = () => {
   const [age, setAge] = React.useState<AgeOption>(10);
-  
-    const [timeString, setTimeString] = useState("");
-    const [formattedDate, setFormattedDate] = useState("");
-
-  const handleChange = (event: any) => {
-    setAge(event.target.value as AgeOption);
-  };
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
+  const [timeString, setTimeString] = useState("");
+  const [formattedDate, setFormattedDate] = useState("");
 
   const labels: Record<any, string> = {
     10: "All",
@@ -164,6 +164,26 @@ const Navbar: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+
+  // Add this useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Update the handleChange function
+  const handleChange = (event: any) => {
+    setSelectedCategory(event.target.value);
+  };
+
   return (
     <div className="flex justify-between mb-8">
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -171,12 +191,46 @@ const Navbar: React.FC = () => {
           <CustomSelect
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
+            value={selectedCategory}
             onChange={handleChange}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left',
+              },
+              PaperProps: {
+                sx: {
+                  mt: 1,
+                  maxHeight: 300,
+                  backgroundColor: '#FFFFFF',
+                  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                  "& .MuiMenuItem-root": {
+                    padding: "8px 16px",
+                    "&:hover": {
+                      backgroundColor: "#FFF1EE",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "#FFE4E0",
+                      color: "#F76B56",
+                      "&:hover": {
+                        backgroundColor: "#FFE4E0",
+                      }
+                    }
+                  },
+                },
+              },
+            }}
           >
-            <MenuItem value={10}>All</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={0}>All Categories</MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.id}>
+                {category.category_name}
+              </MenuItem>
+            ))}
           </CustomSelect>
         </FormControl>
         <CustomTextField
