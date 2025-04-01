@@ -1,23 +1,9 @@
 import axios from "axios";
 import { store } from "@/store/store";
 import { setShowLoginAlert } from "@/store/slices/authSlice";
+import { SigninPayload, SignUpPayload } from "@/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_AUTH_URL;
-
-interface SignUpPayload {
-  username: string;
-  email: string;
-  firstname: string;
-  lastname: string;
-  password: string;
-  role: string;
-}
-
-interface SigninPayload {
-  username: string;
-  password: string;
-  role: string;
-}
 
 export const authService = {
   signup: async (payload: SignUpPayload) => {
@@ -28,7 +14,7 @@ export const authService = {
       throw error;
     }
   },
-  
+
   signin: async (payload: SigninPayload) => {
     try {
       const response = await axios.post(`${BASE_URL}/signin`, payload);
@@ -38,9 +24,8 @@ export const authService = {
     }
   },
 
-  
   isAuthenticated: () => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     return !!token;
   },
 
@@ -55,5 +40,5 @@ export const authService = {
   handleLoginAction: (navigateToLogin: () => void) => {
     store.dispatch(setShowLoginAlert(false));
     navigateToLogin();
-  }
+  },
 };
