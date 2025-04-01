@@ -1,7 +1,5 @@
 "use client";
 
-import { updateForm } from "@/store/actions/formActions";
-import { RootState } from "@/store/store";
 import styled from "@emotion/styled";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
@@ -16,11 +14,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import OtpVerification from "./OtpVerification";
-
 import { useRouter } from "next/navigation";
-
 import { authService } from "@/services/authService";
 
 interface TypeProps {
@@ -75,7 +70,6 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
     },
     mode: "onSubmit",
   });
-  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [apiError, setApiError] = useState<string>("");
@@ -130,7 +124,7 @@ const LoginForm = ({ isSignUp, header, subHeader }: TypeProps) => {
         const response = await authService.signin({
           username: data.userName,
           password: data.password,
-          role: "STUDENT",
+          role: "ADMIN",
         });
 
         localStorage.setItem("accessToken", response.accessToken);

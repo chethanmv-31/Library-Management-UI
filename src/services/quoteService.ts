@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 interface Quote {
   id: number;
@@ -8,10 +8,12 @@ interface Quote {
 
 export const getQuotes = async (): Promise<Quote> => {
   try {
-    const response = await axios.get<Quote>('https://dummyjson.com/quotes/random');
+    const response = await axios.get<Quote>(
+      "https://dummyjson.com/quotes/random"
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching quotes:', error);
-    throw error; // Re-throw the error to handle it in the component
+    console.error("Error fetching quotes:", error);
+    throw error;
   }
 };
