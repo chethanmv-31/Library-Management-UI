@@ -30,12 +30,6 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({
   // Convert "0" to empty string
   const displayValue = value === "0" ? "" : value;
 
-  console.log(
-    "value",
-    value,
-    error
-  );
-  
   return (
     <div>
       <h4 className="mb-1 font-medium text-gray-700">

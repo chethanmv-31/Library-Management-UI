@@ -7,7 +7,7 @@ import { fetchPublishers } from "../../services/publisherService";
 import { fetchAuthors } from "../../services/authorService";
 import { getCategories } from "@/services/categoryService";
 import { fetchBindings } from "@/services/bindingService";
-import {BookFormData} from "@/types";
+import { BookFormData } from "@/types";
 import { useForm, Controller } from "react-hook-form";
 
 // Add these constants outside the component
@@ -28,23 +28,12 @@ const FLOOR_OPTIONS = [
   { label: "Fourth Floor", value: "4" },
   { label: "Fifth Floor", value: "5" },
 ];
+interface Option {
+  label: string;
+  value: string;
+}
 
 const CreateBookForm: React.FC = () => {
-  const [formData, setFormData] = useState<BookFormData>({
-    title: "",
-    price: "",
-    no_of_copies: 0,
-    isbn_no: "",
-    edition: "",
-    publisher_id: 0,
-    author_id: 0,
-    binding_id: 0,
-    category_id: 0,
-    shelf_id: 0,
-    floor_id: 0,  // Initialize the new field
-    language: "",
-  });  
-
   const [options, setOptions] = useState<Record<string, Option[]>>({
     publishers: [],
     authors: [],
@@ -63,47 +52,19 @@ const CreateBookForm: React.FC = () => {
       const mappedData = data.map((item: any) => ({
         label: item[labelKey],
         value: item[valueKey].toString(),
-      }));  
+      }));
       setOptions((prev) => ({ ...prev, [key]: mappedData }));
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
-    }  
-  };  
+    }
+  };
 
   useEffect(() => {
     fetchOptions(fetchPublishers, "publishers", "publisher_name");
     fetchOptions(fetchAuthors, "authors", "author_Name", "Id");
     fetchOptions(getCategories, "categories", "category_name");
     fetchOptions(fetchBindings, "bindings", "binding_name");
-  }, []);  
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));  
-  };  
-
-
-
-  console.log("formData---", formData);
-  type Option = { label: string; value: string };
-
-
-  const handleAutocompleteChange = (
-    field: keyof BookFormData,
-    idField: keyof BookFormData,
-    options: Option[],
-    value: string
-  ) => {
-    const selectedOption = options.find((opt) => opt.value === value);
-    setFormData((prev) => ({
-      ...prev,
-      [idField]: selectedOption ? parseInt(value) : 0,
-      [field]: selectedOption ? undefined : value,
-    }));
-  };
+  }, []);
 
   const {
     control,
@@ -156,12 +117,12 @@ const CreateBookForm: React.FC = () => {
               <Controller
                 name="price"
                 control={control}
-                rules={{ 
+                rules={{
                   required: "Price is required",
                   pattern: {
                     value: /^\d+(\.\d{1,2})?$/,
-                    message: "Please enter a valid price"
-                  }
+                    message: "Please enter a valid price",
+                  },
                 }}
                 render={({ field }) => (
                   <TextField
@@ -184,12 +145,12 @@ const CreateBookForm: React.FC = () => {
               <Controller
                 name="no_of_copies"
                 control={control}
-                rules={{ 
+                rules={{
                   required: "Number of copies is required",
                   min: {
                     value: 1,
-                    message: "Must have at least 1 copy"
-                  }
+                    message: "Must have at least 1 copy",
+                  },
                 }}
                 render={({ field }) => (
                   <TextField
@@ -213,12 +174,12 @@ const CreateBookForm: React.FC = () => {
               <Controller
                 name="isbn_no"
                 control={control}
-                rules={{ 
+                rules={{
                   required: "ISBN number is required",
                   pattern: {
                     value: /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/,
-                    message: "Please enter a valid ISBN number"
-                  }
+                    message: "Please enter a valid ISBN number",
+                  },
                 }}
                 render={({ field }) => (
                   <TextField
@@ -267,18 +228,12 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.publishers}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'publisherName',
-                        'publisher_id',
-                        options.publishers,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.publisher_id}
                     helperText={errors.publisher_id?.message}
                     placeholder="Select or type publisher name"
+                  
+
                   />
                 )}
               />
@@ -295,18 +250,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.authors}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'authorName',
-                        'author_id',
-                        options.authors,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.author_id}
                     helperText={errors.author_id?.message}
                     placeholder="Select or type author name"
+                  
                   />
                 )}
               />
@@ -323,18 +271,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.categories}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'categoryName',
-                        'category_id',
-                        options.categories,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.category_id}
                     helperText={errors.category_id?.message}
                     placeholder="Select or type category name"
+                  
                   />
                 )}
               />
@@ -351,18 +292,12 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.bindings}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'bindingName',
-                        'binding_id',
-                        options.bindings,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.binding_id}
                     helperText={errors.binding_id?.message}
                     placeholder="Select or type binding type"
+                  
+
                   />
                 )}
               />
@@ -379,15 +314,7 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={SHELF_OPTIONS}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'shelfNo',
-                        'shelf_id',
-                        SHELF_OPTIONS,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.shelf_id}
                     helperText={errors.shelf_id?.message}
                     placeholder="Select or type shelf number"
@@ -407,18 +334,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={FLOOR_OPTIONS}
                     required={true}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      handleAutocompleteChange(
-                        'floorNo',
-                        'floor_id',
-                        FLOOR_OPTIONS,
-                        value
-                      );
-                    }}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.floor_id}
                     helperText={errors.floor_id?.message}
                     placeholder="Select or type floor number"
+                  
                   />
                 )}
               />
