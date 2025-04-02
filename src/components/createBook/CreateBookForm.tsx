@@ -228,10 +228,12 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.publishers}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.publisher_id}
                     helperText={errors.publisher_id?.message}
                     placeholder="Select or type publisher name"
+                  
+
                   />
                 )}
               />
@@ -248,10 +250,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.authors}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.author_id}
                     helperText={errors.author_id?.message}
                     placeholder="Select or type author name"
+                  
                   />
                 )}
               />
@@ -268,10 +271,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.categories}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.category_id}
                     helperText={errors.category_id?.message}
                     placeholder="Select or type category name"
+                  
                   />
                 )}
               />
@@ -288,10 +292,12 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={options.bindings}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.binding_id}
                     helperText={errors.binding_id?.message}
                     placeholder="Select or type binding type"
+                  
+
                   />
                 )}
               />
@@ -308,7 +314,7 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={SHELF_OPTIONS}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.shelf_id}
                     helperText={errors.shelf_id?.message}
                     placeholder="Select or type shelf number"
@@ -328,10 +334,11 @@ const CreateBookForm: React.FC = () => {
                     value={field.value?.toString() || ""}
                     options={FLOOR_OPTIONS}
                     required={true}
-                    onChange={() => {}}
+                    onChange={(value) => field.onChange(value)}
                     error={!!errors.floor_id}
                     helperText={errors.floor_id?.message}
                     placeholder="Select or type floor number"
+                  
                   />
                 )}
               />
