@@ -8,6 +8,7 @@ import { fetchAuthors } from "../../services/authorService";
 import { getCategories } from "@/services/categoryService";
 import { fetchBindings } from "@/services/bindingService";
 import {BookFormData} from "@/types";
+import { useForm, Controller } from "react-hook-form";
 
 // Add these constants outside the component
 const SHELF_OPTIONS = [
@@ -84,10 +85,7 @@ const CreateBookForm: React.FC = () => {
     }));  
   };  
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(formData);
-  };  
+
 
   console.log("formData---", formData);
   type Option = { label: string; value: string };
@@ -107,12 +105,23 @@ const CreateBookForm: React.FC = () => {
     }));
   };
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BookFormData>();
+
+  const onSubmit = async (data: BookFormData) => {
+    console.log(data);
+    // Your submission logic here
+  };
+
   return (
     <Card className="shadow-lg bg-white rounded-lg px-6">
       <CardContent className="p-8">
         <h2 className="text-2xl mb-10">Create New Book</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Box
             display="grid"
             gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
@@ -122,16 +131,21 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 Title <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
+              <Controller
                 name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className="bg-gray-50 rounded-md"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ required: "Title is required" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={!!errors.title}
+                    helperText={errors.title?.message}
+                    className="bg-gray-50 rounded-md"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
 
@@ -139,16 +153,27 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 Price <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
+              <Controller
                 name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                className="bg-gray-50"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ 
+                  required: "Price is required",
+                  pattern: {
+                    value: /^\d+(\.\d{1,2})?$/,
+                    message: "Please enter a valid price"
+                  }
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={!!errors.price}
+                    helperText={errors.price?.message}
+                    className="bg-gray-50"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
 
@@ -156,17 +181,28 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 Number of Copies <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
-                type="number"
+              <Controller
                 name="no_of_copies"
-                value={formData.no_of_copies}
-                onChange={handleInputChange}
-                className="bg-gray-50"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ 
+                  required: "Number of copies is required",
+                  min: {
+                    value: 1,
+                    message: "Must have at least 1 copy"
+                  }
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    fullWidth
+                    error={!!errors.no_of_copies}
+                    helperText={errors.no_of_copies?.message}
+                    className="bg-gray-50"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
 
@@ -174,16 +210,27 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 ISBN Number <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
+              <Controller
                 name="isbn_no"
-                value={formData.isbn_no}
-                onChange={handleInputChange}
-                className="bg-gray-50"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ 
+                  required: "ISBN number is required",
+                  pattern: {
+                    value: /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/,
+                    message: "Please enter a valid ISBN number"
+                  }
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={!!errors.isbn_no}
+                    helperText={errors.isbn_no?.message}
+                    className="bg-gray-50"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
 
@@ -191,112 +238,189 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 Edition <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
+              <Controller
                 name="edition"
-                value={formData.edition}
-                onChange={handleInputChange}
-                className="bg-gray-50"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ required: "Edition is required" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={!!errors.edition}
+                    helperText={errors.edition?.message}
+                    className="bg-gray-50"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Publisher Name"
-                value={formData.publisherName || ""}
-                options={options.publishers}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'publisherName',
-                  'publisher_id',
-                  options.publishers,
-                  value
+              <Controller
+                name="publisher_id"
+                control={control}
+                rules={{ required: "Publisher is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Publisher Name"
+                    value={field.value?.toString() || ""}
+                    options={options.publishers}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'publisherName',
+                        'publisher_id',
+                        options.publishers,
+                        value
+                      );
+                    }}
+                    error={!!errors.publisher_id}
+                    helperText={errors.publisher_id?.message}
+                    placeholder="Select or type publisher name"
+                  />
                 )}
-                placeholder="Select or type publisher name"
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Author Name"
-                value={formData.authorName || ""}
-                options={options.authors}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'authorName',
-                  'author_id',
-                  options.authors,
-                  value
+              <Controller
+                name="author_id"
+                control={control}
+                rules={{ required: "Author is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Author Name"
+                    value={field.value?.toString() || ""}
+                    options={options.authors}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'authorName',
+                        'author_id',
+                        options.authors,
+                        value
+                      );
+                    }}
+                    error={!!errors.author_id}
+                    helperText={errors.author_id?.message}
+                    placeholder="Select or type author name"
+                  />
                 )}
-                placeholder="Select or type author name"
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Category Name"
-                value={formData.categoryName || ""}
-                options={options.categories}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'categoryName',
-                  'category_id',
-                  options.categories,
-                  value
+              <Controller
+                name="category_id"
+                control={control}
+                rules={{ required: "Category is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Category Name"
+                    value={field.value?.toString() || ""}
+                    options={options.categories}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'categoryName',
+                        'category_id',
+                        options.categories,
+                        value
+                      );
+                    }}
+                    error={!!errors.category_id}
+                    helperText={errors.category_id?.message}
+                    placeholder="Select or type category name"
+                  />
                 )}
-                placeholder="Select or type category name"
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Binding Type"
-                value={formData.bindingName || ""}
-                options={options.bindings}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'bindingName',
-                  'binding_id',
-                  options.bindings,
-                  value
+              <Controller
+                name="binding_id"
+                control={control}
+                rules={{ required: "Binding type is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Binding Type"
+                    value={field.value?.toString() || ""}
+                    options={options.bindings}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'bindingName',
+                        'binding_id',
+                        options.bindings,
+                        value
+                      );
+                    }}
+                    error={!!errors.binding_id}
+                    helperText={errors.binding_id?.message}
+                    placeholder="Select or type binding type"
+                  />
                 )}
-                placeholder="Select or type binding type"
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Shelf Number"
-                value={formData.shelfNo?.toString() || ""}
-                options={SHELF_OPTIONS}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'shelfNo',
-                  'shelf_id',
-                  SHELF_OPTIONS,
-                  value
+              <Controller
+                name="shelf_id"
+                control={control}
+                rules={{ required: "Shelf number is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Shelf Number"
+                    value={field.value?.toString() || ""}
+                    options={SHELF_OPTIONS}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'shelfNo',
+                        'shelf_id',
+                        SHELF_OPTIONS,
+                        value
+                      );
+                    }}
+                    error={!!errors.shelf_id}
+                    helperText={errors.shelf_id?.message}
+                    placeholder="Select or type shelf number"
+                  />
                 )}
-                placeholder="Select or type shelf number"
               />
             </Box>
 
             <Box>
-              <CustomAutocomplete
-                label="Floor Number"
-                value={formData.floorNo?.toString() || ""}
-                options={FLOOR_OPTIONS}
-                required={true}
-                onChange={(value) => handleAutocompleteChange(
-                  'floorNo',
-                  'floor_id',
-                  FLOOR_OPTIONS,
-                  value
+              <Controller
+                name="floor_id"
+                control={control}
+                rules={{ required: "Floor number is required" }}
+                render={({ field }) => (
+                  <CustomAutocomplete
+                    label="Floor Number"
+                    value={field.value?.toString() || ""}
+                    options={FLOOR_OPTIONS}
+                    required={true}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleAutocompleteChange(
+                        'floorNo',
+                        'floor_id',
+                        FLOOR_OPTIONS,
+                        value
+                      );
+                    }}
+                    error={!!errors.floor_id}
+                    helperText={errors.floor_id?.message}
+                    placeholder="Select or type floor number"
+                  />
                 )}
-                placeholder="Select or type floor number"
               />
             </Box>
 
@@ -304,16 +428,21 @@ const CreateBookForm: React.FC = () => {
               <h4 className="mb-1 font-medium text-gray-700">
                 Language <span className="text-red-500">*</span>
               </h4>
-              <TextField
-                required
-                fullWidth
+              <Controller
                 name="language"
-                value={formData.language}
-                onChange={handleInputChange}
-                className="bg-gray-50"
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                control={control}
+                rules={{ required: "Language is required" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={!!errors.language}
+                    helperText={errors.language?.message}
+                    className="bg-gray-50"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
               />
             </Box>
           </Box>

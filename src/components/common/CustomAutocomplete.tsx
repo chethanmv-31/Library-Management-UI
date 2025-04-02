@@ -23,21 +23,32 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({
   options,
   required = false,
   onChange,
-  placeholder
+  placeholder,
+  error = false,
+  helperText
 }) => {
+  // Convert "0" to empty string
+  const displayValue = value === "0" ? "" : value;
+
+  console.log(
+    "value",
+    value,
+    error
+  );
+  
   return (
-    <Box>
+    <div>
       <h4 className="mb-1 font-medium text-gray-700">
         {label} {required && <span className="text-red-500">*</span>}
       </h4>
       <Autocomplete
         freeSolo
         fullWidth
-        value={options.find(opt => opt.value === value) || value}
+        value={options.find(opt => opt.value === displayValue) || displayValue}
         options={options}
         getOptionLabel={(option: string | Option) => {
           if (typeof option === 'string') {
-            return option;
+            return option === "0" ? "" : option;
           }
           return option.label || '';
         }}
@@ -66,11 +77,16 @@ const CustomAutocomplete: React.FC<CustomAutocompleteProps> = ({
             className="bg-gray-50"
             variant="outlined"
             placeholder={placeholder}
-            required={required}
+            error={error}
+            helperText={helperText}
           />
         )}
       />
-    </Box>
+      {/* Remove the error message div since we're using TextField's built-in error display
+      {error && helperText && (
+        <p className="mt-1 text-sm text-red-500">{helperText}</p>
+      )} */}
+    </div>
   );
 };
 
